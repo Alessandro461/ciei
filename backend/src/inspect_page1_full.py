@@ -1,0 +1,31 @@
+import pdfplumber
+
+def inspect_page1_only(pdf_path):
+    print(f"Inspecting PDF: {pdf_path}")
+    with pdfplumber.open(pdf_path) as pdf:
+        page = pdf.pages[0]
+        print(f"\n--- PAGE 1 (height={page.height}, width={page.width}) ---")
+        words = page.extract_words()
+        
+        lines = {}
+        for w in words:
+            y_round = round(w['top'], 1)
+            found = False
+            for y_key in lines:
+                if abs(y_key - y_round) < 4:
+                    lines[y_key].append(w)
+                    found = True
+                    break
+            if not found:
+                lines[y_round] = [w]
+        
+        for y_top in sorted(lines.keys()):
+            line_words = sorted(lines[y_top], key=lambda w: w['x0'])
+            text = " ".join([w['text'] for w in line_words])
+            x0 = line_words[0]['x0']
+            pdf_lib_y = page.height - y_top
+            print(f"  [y_top={y_top:.1f} | pdf-lib y={pdf_lib_y:.1f} | x0={x0:.1f}]: {text}")
+
+if __name__ == "__main__":
+    pdf_path = "C:\\Users\\Alessandro\\Documents\\ciei-sistema-main\\backend\\src\\assets\\templates\\Anexo_G.pdf"
+    inspect_page1_only(pdf_path)

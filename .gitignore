@@ -1,0 +1,20 @@
+# root ignore
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+.env
+**/.env
+*.log
+**/*.log
+uploads/
+**/uploads/
+*grid.pdf
+**/anexo_g_grid.pdf
+.DS_Store
+.vscode/
+.idea/
+*.local
+**/uploads/evaluaciones/ejemplo_checklist_anexog.pdf
