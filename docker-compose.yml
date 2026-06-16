@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: ciei-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ciei_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./basededatos/aea.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ciei-network
+
+  backend:
+    build: ./backend
+    container_name: ciei-backend
+    restart: always
+    environment:
+      - PORT=3000
+      - DB_USER=postgres
+      - DB_PASSWORD=123
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=ciei_db
+      - JWT_SECRET=super_secret_token_ciei_key_123!
+      - EMAIL_USER=example@gmail.com
+      - EMAIL_PASS=abcd1234efgh5678
+    ports:
+      - "3000:3000"
+    volumes:
+      - backend-uploads:/app/uploads
+    depends_on:
+      - db
+    networks:
+      - ciei-network
+
+  frontend:
+    build: ./frontend
+    container_name: ciei-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - ciei-network
+
+volumes:
+  pgdata:
+  backend-uploads:
+
+networks:
+  ciei-network:
+    driver: bridge
