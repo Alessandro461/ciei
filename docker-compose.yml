@@ -38,7 +38,9 @@ services:
     depends_on:
       - db
     networks:
-      - ciei-network
+      ciei-network:
+        aliases:
+          - backend.railway.internal
 
   frontend:
     build: ./frontend
