@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AsignarRevisorModal from '../components/AsignarRevisorModal';
 
 // MAGIA: El sistema detectará automáticamente la URL según dónde esté publicado
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin);
 
 interface SolicitudComite {
   id: number;

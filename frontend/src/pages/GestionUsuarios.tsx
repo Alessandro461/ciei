@@ -12,6 +12,8 @@ interface UsuarioData {
   estado: string;
 }
 
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin);
+
 export default function GestionUsuarios() {
   const [usuarios, setUsuarios] = useState<UsuarioData[]>([]);
   const [cargando, setCargando] = useState(false);
@@ -26,7 +28,7 @@ export default function GestionUsuarios() {
   const cargarUsuarios = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:3000/api/usuarios', {
+      const res = await axios.get(`${API_URL}/api/usuarios`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsuarios(res.data.usuarios);
@@ -49,7 +51,7 @@ export default function GestionUsuarios() {
     setCargando(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:3000/api/usuarios', formData, {
+      await axios.post(`${API_URL}/api/usuarios`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Usuario creado con éxito');

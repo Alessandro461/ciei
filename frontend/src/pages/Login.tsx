@@ -14,6 +14,8 @@ const LockIcon = () => (
   </svg>
 );
 
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin);
+
 export default function Login() {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
@@ -25,7 +27,7 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         correo_institucional: correo,
         password: password,
       });

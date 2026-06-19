@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin);
+
 export default function Registro() {
   const navigate = useNavigate();
   
@@ -40,7 +42,7 @@ const buscarDNI = async (numeroDni: string) => {
     
     try {
       // AQUÍ ESTÁ LA CLAVE: Ruta completa obligando a apuntar al backend real
-      const response = await axios.get(`http://localhost:3000/api/auth/dni/${numeroDni}`);
+      const response = await axios.get(`${API_URL}/api/auth/dni/${numeroDni}`);
       const data = response.data;
       
       if (data.nombres) {
@@ -89,7 +91,7 @@ const buscarDNI = async (numeroDni: string) => {
     }
     
     try {
-      await axios.post('http://localhost:3000/api/auth/registro', {
+      await axios.post(`${API_URL}/api/auth/registro`, {
         dni: documento, 
         nombres,
         apellidos,

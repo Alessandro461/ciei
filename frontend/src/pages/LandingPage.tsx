@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import axios from 'axios';
 
 // Variable de entorno dinámica para despliegue
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin);
 
 // Truco maestro para Vite
 (window as any).THREE = THREE;
