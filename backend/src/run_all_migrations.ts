@@ -27,7 +27,18 @@ async function runAllMigrations() {
     await client.query(`
       ALTER TABLE solicitudes 
       ADD COLUMN IF NOT EXISTS identidad_revelada BOOLEAN DEFAULT false,
-      ADD COLUMN IF NOT EXISTS tipo_revision VARCHAR(20) DEFAULT 'completa';
+      ADD COLUMN IF NOT EXISTS tipo_revision VARCHAR(20) DEFAULT 'completa',
+      ADD COLUMN IF NOT EXISTS facultad VARCHAR(150) DEFAULT 'No especificada',
+      ADD COLUMN IF NOT EXISTS escuela_profesional VARCHAR(150) DEFAULT 'No especificada',
+      ADD COLUMN IF NOT EXISTS resumen TEXT DEFAULT '',
+      ADD COLUMN IF NOT EXISTS objetivos TEXT DEFAULT '',
+      ADD COLUMN IF NOT EXISTS metodologia TEXT DEFAULT '',
+      ADD COLUMN IF NOT EXISTS investigadores_asociados TEXT DEFAULT '',
+      ADD COLUMN IF NOT EXISTS duracion VARCHAR(50) DEFAULT '',
+      ADD COLUMN IF NOT EXISTS usa_muestras_biologicas BOOLEAN DEFAULT false,
+      ADD COLUMN IF NOT EXISTS tipo_muestras_biologicas VARCHAR(255) DEFAULT '',
+      ADD COLUMN IF NOT EXISTS origen_fondos VARCHAR(50) DEFAULT 'autofinanciado',
+      ADD COLUMN IF NOT EXISTS exonerado_pago BOOLEAN DEFAULT false;
     `);
 
     // 2. Usuarios - Columnas adicionales de Fase 6
