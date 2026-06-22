@@ -9,7 +9,10 @@ if (!connectionString) {
 }
 
 async function main() {
-  const client = new Client({ connectionString });
+  const client = new Client({
+    connectionString,
+    ssl: { rejectUnauthorized: false }
+  });
   await client.connect();
   const hash = bcrypt.hashSync('123', 10);
   console.log('Generating hash:', hash);

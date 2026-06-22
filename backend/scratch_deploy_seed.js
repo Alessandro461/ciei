@@ -13,7 +13,10 @@ if (!connectionString) {
 
 async function run() {
   console.log('🔄 Conectando a la base de datos remota...');
-  const client = new Client({ connectionString });
+  const client = new Client({
+    connectionString,
+    ssl: { rejectUnauthorized: false }
+  });
   await client.connect();
   console.log('🔗 ¡Conectado exitosamente!');
 
