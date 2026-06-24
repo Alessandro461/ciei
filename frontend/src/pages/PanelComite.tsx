@@ -138,6 +138,44 @@ export default function PanelComite() {
     }
   };
 
+  const descargarChecklistRevisor = async (dictamenId: number, nombreRevisor: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${API_URL}/api/solicitudes/dictamen/${dictamenId}/checklist-pdf`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Checklist_Evaluacion_${nombreRevisor.replace(/\s+/g, '_')}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      alert('Error al descargar el checklist PDF');
+    }
+  };
+
+  const descargarCartaRevision = async (solicitudId: number, exp: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${API_URL}/api/solicitudes/${solicitudId}/carta-revision-pdf`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Carta_Revision_Consolidada_${exp}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      alert('Error al descargar la carta de revisión consolidada');
+    }
+  };
+
   const descargarCartaObsPDF = async (id: number, numero_expediente: string) => {
     try {
       const token = localStorage.getItem('token');
@@ -1141,6 +1179,26 @@ export default function PanelComite() {
                         </div>
                         <div className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-200/50 whitespace-pre-wrap font-medium">
                           {rec.comentarios_investigador || 'Sin comentarios detallados.'}
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-2.5">
+                          {rec.id && (
+                            <button
+                              type="button"
+                              onClick={() => descargarChecklistRevisor(rec.id, `${rec.revisor_nombres} ${rec.revisor_apellidos}`)}
+                              className="text-[9px] font-black text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-lg border border-indigo-100/50 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                            >
+                              ⬇️ Descargar Anexo {detallesSolicitud.solicitud.tipo_investigacion === 'animales' ? '7' : 'G'} (Checklist PDF)
+                            </button>
+                          )}
+                          {rec.revisor_rol_asignacion === 'principal' && (
+                            <button
+                              type="button"
+                              onClick={() => descargarCartaRevision(detallesSolicitud.solicitud.id, detallesSolicitud.solicitud.numero_expediente)}
+                              className="text-[9px] font-black text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg border border-blue-100/50 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                            >
+                              ⬇️ Descargar Carta de Revisión Consolidada (PDF)
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
