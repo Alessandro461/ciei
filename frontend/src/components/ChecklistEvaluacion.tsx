@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { getAnexoByTipo } from '../constants/anexosChecklist';
 
 interface RespuestaItem {
@@ -51,15 +51,10 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
     return respuestas;
   };
 
-  const { register, control, watch, reset } = useForm<ChecklistFormValues>({
+  const { register, watch, reset } = useForm<ChecklistFormValues>({
     defaultValues: {
       respuestas: inicializarRespuestas()
     }
-  });
-
-  const { fields } = useFieldArray({
-    control,
-    name: 'respuestas'
   });
 
   // Suscribirse a los cambios del formulario para reportarlos al componente padre
@@ -68,7 +63,7 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
   useEffect(() => {
     onChange({
       tipo_anexo: tipoAnexo,
-      respuestas_json: respuestasWatch
+      respuestas_json: respuestasWatch || []
     });
   }, [respuestasWatch, tipoAnexo]);
 
@@ -81,7 +76,8 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
 
   // Buscador rápido del índice de una pregunta en el array plano
   const findPreguntaIndex = (id: string) => {
-    return fields.findIndex((field: any) => field.id === id);
+    const flatPreguntas = inicializarRespuestas();
+    return flatPreguntas.findIndex((field: any) => field.id === id);
   };
 
   return (

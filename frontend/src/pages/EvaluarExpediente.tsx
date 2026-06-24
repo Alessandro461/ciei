@@ -170,6 +170,20 @@ export default function EvaluarExpediente() {
     }
   };
 
+  // Obtener respuestas previas de la checklist del revisor actual si existen
+  const obtenerChecklistInicial = () => {
+    if (!recomendaciones || recomendaciones.length === 0) return undefined;
+    
+    let dictamenPropio;
+    if (miRolAsignacion === 'principal') {
+      dictamenPropio = recomendaciones.find((r: any) => r.revisor_rol_asignacion === 'principal');
+    } else {
+      dictamenPropio = recomendaciones[0]; // Ya filtrado en backend
+    }
+    
+    return dictamenPropio?.checklist_respuestas || undefined;
+  };
+
   // Descargar el documento original al PC del Revisor
   const manejarDescarga = async (documentoId: number, nombreOriginal: string) => {
     try {
@@ -739,6 +753,7 @@ export default function EvaluarExpediente() {
               <ChecklistEvaluacion
                 tipoAnexo={datosProyecto?.tipo_investigacion === 'animales' ? '7' : 'G'}
                 onChange={(data) => setChecklistDataPayload(data)}
+                valorInicial={obtenerChecklistInicial()}
               />
               </div>
 
