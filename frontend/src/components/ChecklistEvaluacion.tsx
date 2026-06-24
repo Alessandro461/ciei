@@ -82,26 +82,27 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
 
   return (
     <div className="space-y-6">
-      <div className="bg-slate-900/40 backdrop-blur-md p-4 rounded-xl border border-slate-800/80 shadow-lg">
-        <h3 className="text-sm font-black text-white tracking-wider uppercase mb-1">
+      {/* Cabecera del Checklist */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50/50 p-5 rounded-2xl border border-blue-100/85 shadow-sm">
+        <h3 className="text-xs font-black text-slate-800 tracking-wider uppercase mb-1 flex items-center gap-1.5">
           📋 {anexoConfig.titulo}
         </h3>
-        <p className="text-[11px] text-slate-400">
-          Por favor, califique cada uno de los criterios obligatorios definidos en la normativa.
+        <p className="text-[10px] text-slate-500 font-medium">
+          Por favor, califique cada uno de los criterios obligatorios definidos en la normativa del comité.
         </p>
       </div>
 
       <div className="space-y-6">
         {anexoConfig.secciones.map((seccion, sIdx) => (
-          <div key={sIdx} className="space-y-4 bg-slate-950/20 p-5 rounded-2xl border border-slate-800/50 shadow-inner">
-            <h4 className="text-xs font-black text-indigo-400 uppercase tracking-widest border-b border-slate-800/80 pb-2">
+          <div key={sIdx} className="space-y-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 shadow-sm">
+            <h4 className="text-[11px] font-black text-indigo-700 uppercase tracking-widest border-b border-indigo-100 pb-2">
               {seccion.titulo}
             </h4>
 
             {seccion.subsecciones.map((sub, subIdx) => (
               <div key={subIdx} className="space-y-3">
                 {sub.titulo && (
-                  <h5 className="text-[11px] font-bold text-slate-300 pl-1">
+                  <h5 className="text-[10px] font-extrabold text-slate-600 pl-1 uppercase tracking-wider flex items-center gap-1 mt-3 first:mt-0">
                     📂 {sub.titulo}
                   </h5>
                 )}
@@ -111,7 +112,7 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
                     const fIdx = findPreguntaIndex(pregunta.id);
                     if (fIdx === -1) return null;
 
-                    const currentValoracion = respuestasWatch[fIdx]?.valoracion;
+                    const currentValoracion = respuestasWatch?.[fIdx]?.valoracion;
                     const requiresJustification = currentValoracion === 'Insuficiente' || currentValoracion === 'Inadecuado';
 
                     return (
@@ -119,44 +120,51 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
                         key={pregunta.id} 
                         className={`p-4 rounded-xl border transition-all duration-300 space-y-3 ${
                           requiresJustification 
-                            ? 'bg-red-500/5 border-red-500/25 shadow-red-500/5 shadow-md' 
-                            : 'bg-slate-900/20 border-slate-800/60 hover:border-slate-800 hover:bg-slate-900/30'
+                            ? 'bg-rose-50/40 border-rose-200 shadow-sm' 
+                            : 'bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-sm'
                         }`}
                       >
-                        <div className="text-xs font-medium text-slate-200">
+                        <div className="text-xs font-semibold text-slate-750 leading-relaxed">
                           {pregunta.texto}
                         </div>
 
                         {/* Opciones de Valoración */}
-                        <div className="flex flex-wrap gap-2.5">
-                          {['Adecuado', 'Insuficiente', 'Inadecuado', 'No se describe', 'No aplica'].map((opt) => (
-                            <label 
-                              key={opt} 
-                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[10px] font-bold uppercase cursor-pointer transition-all duration-200 ${
-                                currentValoracion === opt
-                                  ? opt === 'Adecuado'
-                                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/45'
-                                    : opt === 'Insuficiente' || opt === 'Inadecuado'
-                                      ? 'bg-red-500/20 text-red-400 border-red-500/45'
-                                      : 'bg-blue-500/20 text-blue-400 border-blue-500/45'
-                                  : 'bg-slate-950/40 text-slate-400 border-slate-900 hover:border-slate-800 hover:text-slate-300'
-                              }`}
-                            >
-                              <input
-                                type="radio"
-                                value={opt}
-                                {...register(`respuestas.${fIdx}.valoracion` as const)}
-                                className="hidden"
-                              />
-                              {opt}
-                            </label>
-                          ))}
+                        <div className="flex flex-wrap gap-2">
+                          {['Adecuado', 'Insuficiente', 'Inadecuado', 'No se describe', 'No aplica'].map((opt) => {
+                            const isSelected = currentValoracion === opt;
+                            
+                            let selectedClass = 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-800';
+                            if (isSelected) {
+                              if (opt === 'Adecuado') {
+                                selectedClass = 'bg-emerald-50 text-emerald-700 border-emerald-200 font-bold';
+                              } else if (opt === 'Insuficiente' || opt === 'Inadecuado') {
+                                selectedClass = 'bg-rose-50 text-rose-700 border-rose-200 font-bold';
+                              } else {
+                                selectedClass = 'bg-blue-50 text-blue-700 border-blue-200 font-bold';
+                              }
+                            }
+
+                            return (
+                              <label 
+                                key={opt} 
+                                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[10px] uppercase cursor-pointer transition-all duration-200 ${selectedClass}`}
+                              >
+                                <input
+                                  type="radio"
+                                  value={opt}
+                                  {...register(`respuestas.${fIdx}.valoracion` as const)}
+                                  className="hidden"
+                                />
+                                {opt}
+                              </label>
+                            );
+                          })}
                         </div>
 
                         {/* Justificación Condicional */}
                         {requiresJustification && (
-                          <div className="space-y-1 transition-all duration-300">
-                            <span className="text-[9px] font-black text-red-400 uppercase tracking-wider block">
+                          <div className="space-y-1.5 transition-all duration-300">
+                            <span className="text-[9px] font-black text-rose-600 uppercase tracking-wider block">
                               ⚠️ Justificación requerida
                             </span>
                             <textarea
@@ -164,7 +172,7 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
                               placeholder="Escriba aquí la justificación detallada y observaciones para esta valoración (Obligatorio)..."
                               required
                               {...register(`respuestas.${fIdx}.justificacion_texto` as const)}
-                              className="w-full px-3 py-2 border border-red-500/20 rounded-lg text-xs outline-none focus:border-red-500/50 bg-red-950/10 focus:bg-red-950/20 text-red-100 transition-all font-medium placeholder-red-500/40"
+                              className="w-full px-3 py-2 border border-rose-200 rounded-lg text-xs outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 bg-white text-slate-800 transition-all font-medium placeholder-slate-450"
                             />
                           </div>
                         )}
