@@ -31,6 +31,7 @@ export default function EvaluarExpediente() {
 
   const [miRolAsignacion, setMiRolAsignacion] = useState<string | null>(null);
   const [recomendaciones, setRecomendaciones] = useState<any[]>([]);
+  const [expandedRecs, setExpandedRecs] = useState<Record<number, boolean>>({});
 
   // Estados del Visor Principal (Columna Derecha)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -561,112 +562,147 @@ export default function EvaluarExpediente() {
                 <div className="space-y-3.5 max-h-72 overflow-y-auto pr-1">
                   {recomendaciones
                     .filter(r => r.revisor_rol_asignacion === 'secundario')
-                    .map((rec) => (
-                      <div key={rec.id} className="bg-white p-4 rounded-xl border border-indigo-100/50 text-xs space-y-3 shadow-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                            👤 {rec.revisor_nombres} {rec.revisor_apellidos}
-                          </span>
-                          <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-lg border ${
-                            rec.resultado === 'aprobado' ? 'bg-emerald-50 text-emerald-700 border-emerald-250' :
-                            rec.resultado === 'observado' ? 'bg-amber-50 text-amber-700 border-amber-250' :
-                            'bg-rose-50/80 text-rose-700 border-rose-250'
-                          }`}>
-                            {rec.resultado}
-                          </span>
-                        </div>
+                    .map((rec) => {
+                      const isExpanded = !!expandedRecs[rec.id];
+                      const toggleExpanded = () => {
+                        setExpandedRecs(prev => ({ ...prev, [rec.id]: !prev[rec.id] }));
+                      };
 
-                        {rec.comentarios && (
-                          <p className="bg-slate-50/80 p-2.5 rounded-lg border border-slate-200/80 text-slate-600 italic pl-3 border-l-4 border-l-indigo-400">
-                            "{rec.comentarios.split('--- EVALUACIÓN DETALLADA')[0].trim()}"
-                          </p>
-                        )}
+                      // Mapear respuestas
+                      const resps = Array.isArray(rec.checklist_respuestas) 
+                        ? rec.checklist_respuestas 
+                        : (typeof rec.checklist_respuestas === 'object' && rec.checklist_respuestas !== null 
+                            ? Object.keys(rec.checklist_respuestas).map(k => ({ id: k, ...rec.checklist_respuestas[k] })) 
+                            : []);
+                      
+                      // Contar observaciones negativas (Insuficiente o Inadecuado)
+                      const obsCount = resps.filter((resp: any) => {
+                        const val = resp.valoracion || resp.calif || '';
+                        return val === 'Insuficiente' || val === 'Inadecuado';
+                      }).length;
 
-                        <div className="space-y-1.5 bg-slate-50/50 p-3 rounded-xl border border-slate-200/60 text-[10px] text-slate-650">
-                          {rec.checklist_respuestas ? (
-                            (() => {
-                              const resps = Array.isArray(rec.checklist_respuestas) 
-                                ? rec.checklist_respuestas 
-                                : (typeof rec.checklist_respuestas === 'object' && rec.checklist_respuestas !== null 
-                                    ? Object.keys(rec.checklist_respuestas).map(k => ({ id: k, ...rec.checklist_respuestas[k] })) 
-                                    : []);
-                              
-                              return resps.length > 0 ? (
-                                resps.map((resp: any, rIdx: number) => {
-                                  const textToShow = resp.texto || resp.id;
-                                  const calif = resp.valoracion || resp.calif || 'No aplica';
-                                  const just = resp.justificacion_texto || resp.just || '';
-                                  
-                                  return (
-                                    <div key={rIdx} className="border-b border-slate-200/40 pb-1.5 last:border-0 last:pb-0">
-                                      <span className="font-semibold text-slate-700">• {textToShow}: </span>
-                                      <span className={`font-black text-[9px] px-1.5 py-0.5 rounded-md ${
-                                        calif === 'Adecuado' 
-                                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
-                                          : 'bg-rose-50 text-rose-700 border border-rose-100'
-                                      }`}>
-                                        [{calif}]
-                                      </span>
-                                      {just && <span className="italic text-slate-500 block pl-3.5 mt-0.5 font-medium">↳ "{just}"</span>}
-                                    </div>
+                      return (
+                        <div key={rec.id} className="bg-white p-4 rounded-xl border border-indigo-100/50 text-xs space-y-3 shadow-sm transition-all duration-300">
+                          <div className="flex justify-between items-center">
+                            <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                              👤 {rec.revisor_nombres} {rec.revisor_apellidos}
+                            </span>
+                            <div className="flex items-center gap-1.5">
+                              {obsCount > 0 && (
+                                <span className="bg-rose-50 text-rose-700 px-2 py-0.5 rounded text-[8px] font-black border border-rose-200 shadow-sm animate-pulse">
+                                  ⚠️ {obsCount} {obsCount === 1 ? 'obs.' : 'obs.'}
+                                </span>
+                              )}
+                              <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-lg border ${
+                                rec.resultado === 'aprobado' ? 'bg-emerald-50 text-emerald-700 border-emerald-250' :
+                                rec.resultado === 'observado' ? 'bg-amber-50 text-amber-700 border-amber-250' :
+                                'bg-rose-50/80 text-rose-700 border-rose-250'
+                              }`}>
+                                {rec.resultado}
+                              </span>
+                            </div>
+                          </div>
+
+                          {rec.comentarios && (
+                            <p className="bg-slate-50/80 p-2.5 rounded-lg border border-slate-200/80 text-slate-600 italic pl-3 border-l-4 border-l-indigo-400">
+                              "{rec.comentarios.split('--- EVALUACIÓN DETALLADA')[0].trim()}"
+                            </p>
+                          )}
+
+                          {/* Botón para expandir/colapsar el checklist */}
+                          <button
+                            type="button"
+                            onClick={toggleExpanded}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-indigo-50/60 hover:bg-indigo-100/60 text-indigo-700 font-extrabold text-[9px] uppercase tracking-wider transition-all cursor-pointer"
+                          >
+                            <span>📋 {isExpanded ? 'Ocultar Criterios Detallados' : 'Ver Criterios Detallados'}</span>
+                            <span className="text-[9px] transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                              ▼
+                            </span>
+                          </button>
+
+                          {isExpanded && (
+                            <div className="space-y-1.5 bg-slate-50/50 p-3 rounded-xl border border-slate-200/60 text-[10px] text-slate-655 animate-fade-in">
+                              {rec.checklist_respuestas ? (
+                                (() => {
+                                  return resps.length > 0 ? (
+                                    resps.map((resp: any, rIdx: number) => {
+                                      const textToShow = resp.texto || resp.id;
+                                      const calif = resp.valoracion || resp.calif || 'No aplica';
+                                      const just = resp.justificacion_texto || resp.just || '';
+                                      
+                                      return (
+                                        <div key={rIdx} className="border-b border-slate-200/40 pb-1.5 last:border-0 last:pb-0">
+                                          <span className="font-semibold text-slate-700">• {textToShow}: </span>
+                                          <span className={`font-black text-[9px] px-1.5 py-0.5 rounded-md ${
+                                            calif === 'Adecuado' 
+                                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
+                                              : 'bg-rose-50 text-rose-700 border border-rose-100'
+                                          }`}>
+                                            [{calif}]
+                                          </span>
+                                          {just && <span className="italic text-slate-500 block pl-3.5 mt-0.5 font-medium">↳ "{just}"</span>}
+                                        </div>
+                                      );
+                                    })
+                                  ) : (
+                                    <span className="italic">No se registraron respuestas detalladas en el checklist.</span>
                                   );
-                                })
+                                })()
                               ) : (
-                                <span className="italic">No se registraron respuestas detalladas en el checklist.</span>
-                              );
-                            })()
-                          ) : (
-                            <>
-                              {rec.aspecto_metodologico_calif && (
-                                <div>
-                                  <span className="font-bold">1. Metodológico:</span>
-                                  <span className={`ml-1 font-bold ${rec.aspecto_metodologico_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                    [{rec.aspecto_metodologico_calif}]
-                                  </span>
-                                  {rec.aspecto_metodologico_just && <span className="italic"> - {rec.aspecto_metodologico_just}</span>}
-                                </div>
+                                <>
+                                  {rec.aspecto_metodologico_calif && (
+                                    <div>
+                                      <span className="font-bold">1. Metodológico:</span>
+                                      <span className={`ml-1 font-bold ${rec.aspecto_metodologico_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                        [{rec.aspecto_metodologico_calif}]
+                                      </span>
+                                      {rec.aspecto_metodologico_just && <span className="italic"> - {rec.aspecto_metodologico_just}</span>}
+                                    </div>
+                                  )}
+                                  {rec.aspecto_etico_calif && (
+                                    <div>
+                                      <span className="font-bold">2. Ético:</span>
+                                      <span className={`ml-1 font-bold ${rec.aspecto_etico_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                        [{rec.aspecto_etico_calif}]
+                                      </span>
+                                      {rec.aspecto_etico_just && <span className="italic"> - {rec.aspecto_etico_just}</span>}
+                                    </div>
+                                  )}
+                                  {rec.aspecto_legal_calif && (
+                                    <div>
+                                      <span className="font-bold">3. Legal:</span>
+                                      <span className={`ml-1 font-bold ${rec.aspecto_legal_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                        [{rec.aspecto_legal_calif}]
+                                      </span>
+                                      {rec.aspecto_legal_just && <span className="italic"> - {rec.aspecto_legal_just}</span>}
+                                    </div>
+                                  )}
+                                  {rec.aspecto_presupuestal_calif && (
+                                    <div>
+                                      <span className="font-bold">4. Presupuestal:</span>
+                                      <span className={`ml-1 font-bold ${rec.aspecto_presupuestal_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                        [{rec.aspecto_presupuestal_calif}]
+                                      </span>
+                                      {rec.aspecto_presupuestal_just && <span className="italic"> - {rec.aspecto_presupuestal_just}</span>}
+                                    </div>
+                                  )}
+                                  {rec.hoja_informacion_calif && (
+                                    <div>
+                                      <span className="font-bold">5. Consentimiento:</span>
+                                      <span className={`ml-1 font-bold ${rec.hoja_informacion_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                        [{rec.hoja_informacion_calif}]
+                                      </span>
+                                      {rec.hoja_informacion_just && <span className="italic"> - {rec.hoja_informacion_just}</span>}
+                                    </div>
+                                  )}
+                                </>
                               )}
-                              {rec.aspecto_etico_calif && (
-                                <div>
-                                  <span className="font-bold">2. Ético:</span>
-                                  <span className={`ml-1 font-bold ${rec.aspecto_etico_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                    [{rec.aspecto_etico_calif}]
-                                  </span>
-                                  {rec.aspecto_etico_just && <span className="italic"> - {rec.aspecto_etico_just}</span>}
-                                </div>
-                              )}
-                              {rec.aspecto_legal_calif && (
-                                <div>
-                                  <span className="font-bold">3. Legal:</span>
-                                  <span className={`ml-1 font-bold ${rec.aspecto_legal_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                    [{rec.aspecto_legal_calif}]
-                                  </span>
-                                  {rec.aspecto_legal_just && <span className="italic"> - {rec.aspecto_legal_just}</span>}
-                                </div>
-                              )}
-                              {rec.aspecto_presupuestal_calif && (
-                                <div>
-                                  <span className="font-bold">4. Presupuestal:</span>
-                                  <span className={`ml-1 font-bold ${rec.aspecto_presupuestal_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                    [{rec.aspecto_presupuestal_calif}]
-                                  </span>
-                                  {rec.aspecto_presupuestal_just && <span className="italic"> - {rec.aspecto_presupuestal_just}</span>}
-                                </div>
-                              )}
-                              {rec.hoja_informacion_calif && (
-                                <div>
-                                  <span className="font-bold">5. Consentimiento:</span>
-                                  <span className={`ml-1 font-bold ${rec.hoja_informacion_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                    [{rec.hoja_informacion_calif}]
-                                  </span>
-                                  {rec.hoja_informacion_just && <span className="italic"> - {rec.hoja_informacion_just}</span>}
-                                </div>
-                              )}
-                            </>
+                            </div>
                           )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
               </div>
             )}
