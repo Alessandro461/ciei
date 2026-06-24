@@ -118,36 +118,39 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
                     return (
                       <div 
                         key={pregunta.id} 
-                        className={`p-4 rounded-xl border transition-all duration-300 space-y-3 ${
+                        className={`p-4.5 rounded-2xl border transition-all duration-300 space-y-3.5 ${
                           requiresJustification 
-                            ? 'bg-rose-50/40 border-rose-200 shadow-sm' 
-                            : 'bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-sm'
+                            ? 'bg-rose-50/30 border-rose-200/90 shadow-sm shadow-rose-100/20' 
+                            : 'bg-white border-slate-200/80 hover:border-slate-300/95 hover:shadow-md hover:shadow-slate-100/50'
                         }`}
                       >
-                        <div className="text-xs font-semibold text-slate-750 leading-relaxed">
-                          {pregunta.texto}
+                        <div className="text-xs font-bold text-slate-800 leading-relaxed flex items-start gap-2">
+                          <span className="flex items-center justify-center w-5 h-5 rounded-md bg-slate-100 text-slate-500 text-[9px] font-black shrink-0 mt-0.5">
+                            {fIdx + 1}
+                          </span>
+                          <span className="flex-1">{pregunta.texto}</span>
                         </div>
 
                         {/* Opciones de Valoración */}
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 pl-7">
                           {['Adecuado', 'Insuficiente', 'Inadecuado', 'No se describe', 'No aplica'].map((opt) => {
                             const isSelected = currentValoracion === opt;
                             
-                            let selectedClass = 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-800';
+                            let selectedClass = 'bg-slate-50/50 text-slate-500 border-slate-200/85 hover:bg-slate-100 hover:text-slate-800 hover:border-slate-300';
                             if (isSelected) {
                               if (opt === 'Adecuado') {
-                                selectedClass = 'bg-emerald-50 text-emerald-700 border-emerald-200 font-bold';
+                                selectedClass = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-black shadow-sm shadow-emerald-100/40';
                               } else if (opt === 'Insuficiente' || opt === 'Inadecuado') {
-                                selectedClass = 'bg-rose-50 text-rose-700 border-rose-200 font-bold';
+                                selectedClass = 'bg-rose-50 text-rose-800 border-rose-300 font-black shadow-sm shadow-rose-100/40';
                               } else {
-                                selectedClass = 'bg-blue-50 text-blue-700 border-blue-200 font-bold';
+                                selectedClass = 'bg-blue-50 text-blue-800 border-blue-300 font-black shadow-sm shadow-blue-100/40';
                               }
                             }
 
                             return (
                               <label 
                                 key={opt} 
-                                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[10px] uppercase cursor-pointer transition-all duration-200 ${selectedClass}`}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[10px] uppercase tracking-wide cursor-pointer transition-all duration-200 ${selectedClass}`}
                               >
                                 <input
                                   type="radio"
@@ -155,7 +158,14 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
                                   {...register(`respuestas.${fIdx}.valoracion` as const)}
                                   className="hidden"
                                 />
-                                {opt}
+                                <span className={`w-2.5 h-2.5 rounded-full border transition-all shrink-0 ${
+                                  isSelected 
+                                    ? opt === 'Adecuado' ? 'bg-emerald-500 border-emerald-600 scale-110 shadow-sm'
+                                      : opt === 'Insuficiente' || opt === 'Inadecuado' ? 'bg-rose-500 border-rose-600 scale-110 shadow-sm'
+                                      : 'bg-blue-500 border-blue-600 scale-110 shadow-sm'
+                                    : 'bg-white border-slate-300 scale-90'
+                                }`} />
+                                <span>{opt}</span>
                               </label>
                             );
                           })}
@@ -163,8 +173,8 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
 
                         {/* Justificación Condicional */}
                         {requiresJustification && (
-                          <div className="space-y-1.5 transition-all duration-300">
-                            <span className="text-[9px] font-black text-rose-600 uppercase tracking-wider block">
+                          <div className="pl-7 space-y-1.5 transition-all duration-300">
+                            <span className="text-[9px] font-black text-rose-600 uppercase tracking-wider block flex items-center gap-1">
                               ⚠️ Justificación requerida
                             </span>
                             <textarea
@@ -172,7 +182,7 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
                               placeholder="Escriba aquí la justificación detallada y observaciones para esta valoración (Obligatorio)..."
                               required
                               {...register(`respuestas.${fIdx}.justificacion_texto` as const)}
-                              className="w-full px-3 py-2 border border-rose-200 rounded-lg text-xs outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 bg-white text-slate-800 transition-all font-medium placeholder-slate-450"
+                              className="w-full px-3 py-2.5 border border-rose-200 rounded-xl text-xs outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 bg-white text-slate-800 transition-all font-medium placeholder-slate-400 shadow-inner"
                             />
                           </div>
                         )}

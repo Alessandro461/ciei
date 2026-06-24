@@ -276,17 +276,22 @@ export default function EvaluarExpediente() {
     <div className="min-h-screen bg-slate-100 font-sans flex flex-col">
       
       {/* NAVEGACIÓN SUPERIOR */}
-      <nav className="bg-slate-900 text-white p-4 border-b-4 border-blue-500 shadow-md">
+      <nav className="bg-gradient-to-r from-[#0B132B] to-[#1C2541] text-white py-4.5 px-6 border-b border-indigo-900 shadow-lg">
         <div className="max-w-[1600px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/comite')} className="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors">
+            <button 
+              onClick={() => navigate('/comite')} 
+              className="bg-white/10 hover:bg-white/20 border border-slate-700/60 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:scale-95 active:scale-90"
+            >
               ← Volver a la Bandeja
             </button>
-            <span className="font-bold text-lg">Evaluación Técnica | Expediente #{id}</span>
+            <span className="font-extrabold text-base tracking-tight">
+              Plataforma de Evaluación | <span className="text-blue-400">Expediente #{id}</span>
+            </span>
           </div>
           {esSubsanacion && (
-            <span className="bg-teal-500 text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 animate-pulse shadow-[0_0_15px_rgba(20,184,166,0.5)]">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span className="bg-teal-650 text-teal-100 border border-teal-500/35 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 animate-pulse shadow-lg">
+              <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping"></span>
               Revisando Subsanación
             </span>
           )}
@@ -549,33 +554,35 @@ export default function EvaluarExpediente() {
             
             {/* Sección de Evaluaciones de Revisores Secundarios (Solo para Revisor Principal) */}
             {miRolAsignacion === 'principal' && recomendaciones.filter(r => r.revisor_rol_asignacion === 'secundario').length > 0 && (
-              <div className="bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 shadow-md space-y-4 mb-5">
-                <h3 className="text-xs font-black text-yellow-400 uppercase tracking-widest flex items-center gap-2">
+              <div className="bg-gradient-to-br from-indigo-50/80 to-blue-50/60 p-5 rounded-2xl border border-indigo-100 shadow-sm space-y-4 mb-5">
+                <h3 className="text-xs font-black text-indigo-900 uppercase tracking-widest flex items-center gap-2">
                   👥 Recomendaciones de Revisores Secundarios
                 </h3>
                 <div className="space-y-3.5 max-h-72 overflow-y-auto pr-1">
                   {recomendaciones
                     .filter(r => r.revisor_rol_asignacion === 'secundario')
                     .map((rec) => (
-                      <div key={rec.id} className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/50 text-xs space-y-2.5">
+                      <div key={rec.id} className="bg-white p-4 rounded-xl border border-indigo-100/50 text-xs space-y-3 shadow-sm">
                         <div className="flex justify-between items-center">
-                          <span className="font-bold text-slate-200">{rec.revisor_nombres} {rec.revisor_apellidos}</span>
-                          <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
-                            rec.resultado === 'aprobado' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                            rec.resultado === 'observado' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                            'bg-red-500/20 text-red-400 border border-red-500/30'
+                          <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                            👤 {rec.revisor_nombres} {rec.revisor_apellidos}
+                          </span>
+                          <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-lg border ${
+                            rec.resultado === 'aprobado' ? 'bg-emerald-50 text-emerald-700 border-emerald-250' :
+                            rec.resultado === 'observado' ? 'bg-amber-50 text-amber-700 border-amber-250' :
+                            'bg-rose-50/80 text-rose-700 border-rose-250'
                           }`}>
                             {rec.resultado}
                           </span>
                         </div>
 
                         {rec.comentarios && (
-                          <p className="bg-slate-900/60 p-2 rounded border border-slate-700/60 text-slate-300 italic">
+                          <p className="bg-slate-50/80 p-2.5 rounded-lg border border-slate-200/80 text-slate-600 italic pl-3 border-l-4 border-l-indigo-400">
                             "{rec.comentarios.split('--- EVALUACIÓN DETALLADA')[0].trim()}"
                           </p>
                         )}
 
-                        <div className="space-y-1.5 bg-slate-900/30 p-3 rounded-xl border border-slate-700/20 text-[10px] text-slate-400">
+                        <div className="space-y-1.5 bg-slate-50/50 p-3 rounded-xl border border-slate-200/60 text-[10px] text-slate-650">
                           {rec.checklist_respuestas ? (
                             (() => {
                               const resps = Array.isArray(rec.checklist_respuestas) 
@@ -591,12 +598,16 @@ export default function EvaluarExpediente() {
                                   const just = resp.justificacion_texto || resp.just || '';
                                   
                                   return (
-                                    <div key={rIdx} className="border-b border-slate-800/60 pb-1 last:border-0 last:pb-0">
-                                      <span className="font-bold text-slate-300">• {textToShow}: </span>
-                                      <span className={`font-bold ${calif === 'Adecuado' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                    <div key={rIdx} className="border-b border-slate-200/40 pb-1.5 last:border-0 last:pb-0">
+                                      <span className="font-semibold text-slate-700">• {textToShow}: </span>
+                                      <span className={`font-black text-[9px] px-1.5 py-0.5 rounded-md ${
+                                        calif === 'Adecuado' 
+                                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
+                                          : 'bg-rose-50 text-rose-700 border border-rose-100'
+                                      }`}>
                                         [{calif}]
                                       </span>
-                                      {just && <span className="italic text-slate-400 block pl-3">↳ "{just}"</span>}
+                                      {just && <span className="italic text-slate-500 block pl-3.5 mt-0.5 font-medium">↳ "{just}"</span>}
                                     </div>
                                   );
                                 })
@@ -609,7 +620,7 @@ export default function EvaluarExpediente() {
                               {rec.aspecto_metodologico_calif && (
                                 <div>
                                   <span className="font-bold">1. Metodológico:</span>
-                                  <span className={`ml-1 font-bold ${rec.aspecto_metodologico_calif === 'Adecuado' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                  <span className={`ml-1 font-bold ${rec.aspecto_metodologico_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
                                     [{rec.aspecto_metodologico_calif}]
                                   </span>
                                   {rec.aspecto_metodologico_just && <span className="italic"> - {rec.aspecto_metodologico_just}</span>}
@@ -618,7 +629,7 @@ export default function EvaluarExpediente() {
                               {rec.aspecto_etico_calif && (
                                 <div>
                                   <span className="font-bold">2. Ético:</span>
-                                  <span className={`ml-1 font-bold ${rec.aspecto_etico_calif === 'Adecuado' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                  <span className={`ml-1 font-bold ${rec.aspecto_etico_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
                                     [{rec.aspecto_etico_calif}]
                                   </span>
                                   {rec.aspecto_etico_just && <span className="italic"> - {rec.aspecto_etico_just}</span>}
@@ -627,7 +638,7 @@ export default function EvaluarExpediente() {
                               {rec.aspecto_legal_calif && (
                                 <div>
                                   <span className="font-bold">3. Legal:</span>
-                                  <span className={`ml-1 font-bold ${rec.aspecto_legal_calif === 'Adecuado' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                  <span className={`ml-1 font-bold ${rec.aspecto_legal_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
                                     [{rec.aspecto_legal_calif}]
                                   </span>
                                   {rec.aspecto_legal_just && <span className="italic"> - {rec.aspecto_legal_just}</span>}
@@ -636,7 +647,7 @@ export default function EvaluarExpediente() {
                               {rec.aspecto_presupuestal_calif && (
                                 <div>
                                   <span className="font-bold">4. Presupuestal:</span>
-                                  <span className={`ml-1 font-bold ${rec.aspecto_presupuestal_calif === 'Adecuado' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                  <span className={`ml-1 font-bold ${rec.aspecto_presupuestal_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
                                     [{rec.aspecto_presupuestal_calif}]
                                   </span>
                                   {rec.aspecto_presupuestal_just && <span className="italic"> - {rec.aspecto_presupuestal_just}</span>}
@@ -645,7 +656,7 @@ export default function EvaluarExpediente() {
                               {rec.hoja_informacion_calif && (
                                 <div>
                                   <span className="font-bold">5. Consentimiento:</span>
-                                  <span className={`ml-1 font-bold ${rec.hoja_informacion_calif === 'Adecuado' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                  <span className={`ml-1 font-bold ${rec.hoja_informacion_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
                                     [{rec.hoja_informacion_calif}]
                                   </span>
                                   {rec.hoja_informacion_just && <span className="italic"> - {rec.hoja_informacion_just}</span>}
@@ -664,13 +675,18 @@ export default function EvaluarExpediente() {
               
               {/* Selector de Resultado */}
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1.5">
                   {miRolAsignacion === 'principal' ? 'Veredicto Final Consolidado (Comité)' : 'Resultado de su Recomendación'}
                 </label>
                 <select 
                   value={dictamen.estadoElegido}
                   onChange={(e) => setDictamen({...dictamen, estadoElegido: e.target.value})}
-                  className="w-full px-3 py-3 border-2 border-slate-200 rounded-xl text-sm font-black text-slate-700 outline-none focus:border-blue-500 bg-slate-50 cursor-pointer transition-colors"
+                  className={`w-full px-4 py-3.5 border-2 rounded-xl text-sm font-black outline-none transition-all cursor-pointer shadow-sm ${
+                    dictamen.estadoElegido === 'aprobado' ? 'border-emerald-400 bg-emerald-50/20 text-emerald-800 focus:border-emerald-500' :
+                    dictamen.estadoElegido === 'observado' ? 'border-amber-400 bg-amber-50/20 text-amber-800 focus:border-amber-500' :
+                    dictamen.estadoElegido === 'rechazado' ? 'border-rose-400 bg-rose-50/20 text-rose-800 focus:border-rose-500' :
+                    'border-slate-200 bg-slate-50 text-slate-700 focus:border-blue-500'
+                  }`}
                 >
                   <option value="" disabled>
                     {miRolAsignacion === 'principal' ? '-- Elija el veredicto consolidado final --' : '-- Elija su recomendación --'}
@@ -815,10 +831,16 @@ export default function EvaluarExpediente() {
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-slate-400 bg-slate-200/50">
-              <svg className="w-24 h-24 mb-4 opacity-40 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              <p className="font-bold text-xl text-slate-500">Mesa de Auditoría</p>
-              <p className="text-sm mt-2 text-slate-500 max-w-sm text-center">Seleccione el botón <span className="bg-white border px-2 py-0.5 rounded text-[10px] font-bold mx-1">👁️ Abrir en Visor</span> en cualquier archivo del historial para inspeccionar el documento aquí.</p>
+            <div className="flex flex-col items-center justify-center h-full text-slate-400 bg-gradient-to-b from-slate-100 to-slate-200/40 p-8">
+              <div className="w-20 h-20 rounded-full bg-slate-200/70 flex items-center justify-center mb-6 shadow-sm border border-slate-300/40">
+                <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <p className="font-black text-lg text-slate-700 tracking-tight">Mesa de Auditoría Activa</p>
+              <p className="text-xs mt-2 text-slate-500 max-w-xs text-center leading-relaxed font-medium">
+                Seleccione el botón <span className="bg-white border border-slate-300 px-2 py-0.5 rounded shadow-sm text-[10px] font-black text-slate-700 mx-0.5">👁️ Visor</span> de cualquier documento adjunto para abrir e inspeccionar su contenido directamente en esta ventana.
+              </p>
             </div>
           )}
         </div>
