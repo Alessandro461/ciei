@@ -182,10 +182,10 @@ export const COORDINATES_ANEXO_G: PlantillaConfig = {
 
 export const COORDINATES_ANEXO_7: PlantillaConfig = {
   administrative: {
-    codigo: { pageIndex: 0, x: 180, y: 595 },
-    fecha: { pageIndex: 0, x: 400, y: 338 },
-    titulo: { pageIndex: 0, x: 180, y: 620 },
-    investigador: { pageIndex: 0, x: 180, y: 445 }
+    codigo: { pageIndex: 0, x: 285, y: 566 },
+    fecha: { pageIndex: 0, x: 400, y: 412 },
+    titulo: { pageIndex: 0, x: 285, y: 594 },
+    investigador: { pageIndex: 0, x: 285, y: 486 }
   },
   questions: {
     // Sección 1: Aspectos Metodológicos
