@@ -309,15 +309,18 @@ export default function ExpedienteDetalle() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex flex-col relative">
       
-      <nav className="bg-blue-950 text-white py-4 px-6 shadow-md border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link to="/dashboard" className="flex items-center gap-2 text-sm font-bold text-blue-200 hover:text-white transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Volver a Mis Expedientes
+      {/* NAVEGACIÓN SUPERIOR UNIFICADA */}
+      <nav className="bg-gradient-to-r from-[#0B132B] to-[#121E3A] text-white shadow-xl z-10 relative border-b border-[#1E293B]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link to="/dashboard" className="flex items-center gap-2.5 text-xs font-bold text-slate-350 hover:text-white transition-all hover:translate-x-[-2px] cursor-pointer">
+            <svg className="w-4 h-4 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            <span>Volver a Mis Expedientes</span>
           </Link>
-          <span className="text-xs bg-white/10 border border-white/20 px-3 py-1.5 rounded-lg font-black tracking-widest uppercase">
-            ID Código: #{expediente?.id}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] bg-white/10 border border-slate-700/60 px-3 py-1.5 rounded-lg font-black tracking-widest uppercase text-slate-300">
+              ID Código: #{expediente?.id}
+            </span>
+          </div>
         </div>
       </nav>
 
@@ -386,7 +389,7 @@ export default function ExpedienteDetalle() {
               <p className="text-sm text-slate-500 mb-6 font-medium">Cumpla con los requisitos éticos posteriores a la aprobación del estudio.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button onClick={() => abrirModalPost('enmienda', 'Solicitud de Enmienda', 'Adjunte el documento detallando las modificaciones a su protocolo original.', 'blue')} className="group flex flex-col items-center justify-center p-6 border-2 border-slate-100 hover:border-blue-200 hover:bg-blue-50 rounded-2xl transition-all">
+                <button onClick={() => abrirModalPost('enmienda', 'Solicitud de Enmienda', 'Adjunte el documento detallando las modificaciones a su protocolo original.', 'blue')} className="group flex flex-col items-center justify-center p-6 border border-slate-200/60 hover:border-blue-200/80 hover:bg-blue-50/30 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                   <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                   </div>
@@ -394,7 +397,7 @@ export default function ExpedienteDetalle() {
                   <span className="text-xs text-slate-500 mt-1 text-center">Cambios en metodología o equipo</span>
                 </button>
 
-                <button onClick={() => abrirModalPost('reporte_avance', 'Reporte de Avance o Cierre', 'Suba su informe periódico o el informe final de conclusión del estudio.', 'teal')} className="group flex flex-col items-center justify-center p-6 border-2 border-slate-100 hover:border-teal-200 hover:bg-teal-50 rounded-2xl transition-all">
+                <button onClick={() => abrirModalPost('reporte_avance', 'Reporte de Avance o Cierre', 'Suba su informe periódico o el informe final de conclusión del estudio.', 'teal')} className="group flex flex-col items-center justify-center p-6 border border-slate-200/60 hover:border-teal-200/80 hover:bg-teal-50/30 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                   <div className="w-12 h-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                   </div>
@@ -402,7 +405,7 @@ export default function ExpedienteDetalle() {
                   <span className="text-xs text-slate-500 mt-1 text-center">Informes de cumplimiento ético</span>
                 </button>
 
-                <button onClick={() => abrirModalPost('evento_adverso', 'Reporte de Evento Adverso', 'Notificación urgente de riesgos, efectos secundarios o daños a participantes.', 'red')} className="group flex flex-col items-center justify-center p-6 border-2 border-red-100 hover:border-red-300 hover:bg-red-50 bg-red-50/30 rounded-2xl transition-all">
+                <button onClick={() => abrirModalPost('evento_adverso', 'Reporte de Evento Adverso', 'Notificación urgente de riesgos, efectos secundarios o daños a participantes.', 'red')} className="group flex flex-col items-center justify-center p-6 border border-red-100 hover:border-red-300 hover:bg-red-50/30 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                   <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform group-hover:animate-pulse">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                   </div>
@@ -522,7 +525,7 @@ export default function ExpedienteDetalle() {
                 <p className="text-sm text-slate-500 mt-1 font-medium">Suba cada archivo correspondiente en su ranura respectiva. Todos los marcados como obligatorios son necesarios.</p>
               </div>
               
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {obtenerAnexosRequeridos().map((anexo) => {
                   // Buscar el documento más reciente subido para esta ranura (anexo.clave)
                   const docsSubidos = historial.filter(d => (d as any).anexo_clave === anexo.clave);
@@ -530,45 +533,50 @@ export default function ExpedienteDetalle() {
                   const docReciente = tieneDoc ? docsSubidos[0] : null;
 
                   return (
-                    <div key={anexo.clave} className={`p-5 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
-                      tieneDoc ? 'bg-emerald-50/50 border-emerald-200 shadow-sm' : 'bg-slate-50 border-slate-200'
-                    }`}>
-                      <div className="space-y-1.5 flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${tieneDoc ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-                          <h4 className="font-black text-sm text-slate-800 truncate" title={anexo.label}>
-                            {anexo.label}
-                          </h4>
+                    <div 
+                      key={anexo.clave} 
+                      className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-4 min-h-[200px] hover:shadow-sm ${
+                        tieneDoc ? 'bg-emerald-50/30 border-emerald-200' : 'bg-slate-50/50 border-slate-200'
+                      }`}
+                    >
+                      <div className="space-y-3.5">
+                        <div className="flex items-start justify-between gap-2.5">
+                          <div className="flex gap-2 min-w-0">
+                            <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${tieneDoc ? 'bg-emerald-500' : 'bg-rose-450'}`}></span>
+                            <h4 className="font-bold text-xs text-slate-800 leading-tight" title={anexo.label}>
+                              {anexo.label}
+                            </h4>
+                          </div>
                           {anexo.obligatorio ? (
-                            <span className="text-[9px] font-black uppercase text-rose-600 bg-rose-100 px-2 py-0.5 rounded shrink-0">Obligatorio</span>
+                            <span className="text-[8px] font-black uppercase text-rose-600 bg-rose-100/80 px-2 py-0.5 rounded shrink-0 tracking-wider">Obligatorio</span>
                           ) : (
-                            <span className="text-[9px] font-black uppercase text-slate-500 bg-slate-200 px-2 py-0.5 rounded shrink-0">Opcional</span>
+                            <span className="text-[8px] font-black uppercase text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded shrink-0 tracking-wider">Opcional</span>
                           )}
                         </div>
                         
                         {tieneDoc && docReciente ? (
-                          <div className="text-xs text-slate-600 space-y-1 font-medium">
-                            <p className="truncate text-blue-700 font-bold bg-blue-50/50 px-2.5 py-1 rounded border border-blue-100 max-w-md">
+                          <div className="text-[11px] text-slate-600 space-y-1.5 font-medium min-w-0">
+                            <p className="truncate text-blue-755 font-bold bg-blue-50/60 px-2.5 py-1.5 rounded border border-blue-100/50 w-full animate-fade-in" title={docReciente.nombre_archivo_original}>
                               📄 {docReciente.nombre_archivo_original}
                             </p>
                             <p className="text-[10px] text-slate-400 font-bold">
-                              Versión más reciente: <span className="text-blue-600 font-black">V{docReciente.version || docsSubidos.length}</span> | Subido el: {new Date(docReciente.fecha_subida).toLocaleDateString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}
+                              Versión: <span className="text-blue-600 font-black">V{docReciente.version || docsSubidos.length}</span> | {new Date(docReciente.fecha_subida).toLocaleDateString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}
                             </p>
                           </div>
                         ) : (
-                          <p className="text-xs text-slate-400 font-medium italic">Aún no se ha cargado ningún archivo para este anexo.</p>
+                          <p className="text-[11px] text-slate-400 font-medium italic">Pendiente de carga de archivo.</p>
                         )}
                       </div>
 
-                      {puedeEditar ? (
-                        <div className="shrink-0">
-                          <label className={`px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm flex items-center gap-2 cursor-pointer transition-colors border ${
+                      <div className="pt-2.5 border-t border-slate-200/40 flex justify-end">
+                        {puedeEditar ? (
+                          <label className={`w-full sm:w-auto px-4 py-2 rounded-xl font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 cursor-pointer transition-all border ${
                             tieneDoc 
                               ? 'bg-white border-emerald-300 text-emerald-700 hover:bg-emerald-50' 
-                              : 'bg-slate-900 border-slate-900 text-white hover:bg-slate-800'
+                              : 'bg-slate-900 border-slate-900 text-white hover:bg-slate-800 hover:scale-[1.01]'
                           }`}>
-                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                            {tieneDoc ? 'Actualizar Versión' : 'Cargar Archivo'}
+                            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span>{tieneDoc ? 'Actualizar' : 'Cargar Archivo'}</span>
                             <input 
                               type="file" 
                               accept=".pdf,.doc,.docx"
@@ -579,15 +587,15 @@ export default function ExpedienteDetalle() {
                               className="hidden" 
                             />
                           </label>
-                        </div>
-                      ) : (
-                        tieneDoc && docReciente && (
-                          <button onClick={() => descargarArchivoHistorial(docReciente.id, docReciente.nombre_archivo_original)} className="bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-sm">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            Descargar
-                          </button>
-                        )
-                      )}
+                        ) : (
+                          tieneDoc && docReciente && (
+                            <button onClick={() => descargarArchivoHistorial(docReciente.id, docReciente.nombre_archivo_original)} className="w-full sm:w-auto bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold shrink-0 flex items-center justify-center gap-1.5 shadow-sm">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                              <span>Descargar</span>
+                            </button>
+                          )
+                        )}
+                      </div>
                     </div>
                   );
                 })}

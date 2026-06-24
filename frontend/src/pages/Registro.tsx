@@ -111,9 +111,9 @@ const buscarDNI = async (numeroDni: string) => {
   const isFormValid = documento.length > 0 && nombres.trim() !== '' && apellidos.trim() !== '' && correo && password && confirmarPassword && (password === confirmarPassword);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-96 bg-red-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-96 bg-[#D4AF37]/10 blur-[120px] rounded-full pointer-events-none"></div>
       
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <Link to="/" className="flex justify-center mb-6">
@@ -122,20 +122,20 @@ const buscarDNI = async (numeroDni: string) => {
         <h2 className="mt-6 text-center text-3xl font-black text-slate-900 tracking-tight">
           Registro de Investigador
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-600">
+        <p className="mt-2 text-center text-sm text-slate-650">
           ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="font-bold text-red-600 hover:text-red-500 transition-colors">
+          <Link to="/login" className="font-bold text-[#B5944B] hover:text-[#D4AF37] transition-colors underline decoration-slate-300 hover:decoration-[#D4AF37]">
             Inicia sesión aquí
           </Link>
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl relative z-10">
-        <div className="bg-white py-8 px-4 shadow-[0_10px_40px_rgb(0,0,0,0.08)] sm:rounded-3xl sm:px-10 border border-slate-100">
+        <div className="bg-white py-8 px-4 shadow-[0_10px_40px_rgb(0,0,0,0.06)] sm:rounded-3xl sm:px-10 border border-slate-200/60">
           
           {errorRegistro && (
-            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-              <p className="text-sm text-red-700 font-bold">{errorRegistro}</p>
+            <div className="mb-4 bg-rose-50 border-l-4 border-rose-500 p-4 rounded-md">
+              <p className="text-sm text-rose-700 font-bold">{errorRegistro}</p>
             </div>
           )}
 
@@ -144,18 +144,18 @@ const buscarDNI = async (numeroDni: string) => {
               
               {/* SELECTOR DE TIPO DE DOCUMENTO */}
               <div className="sm:col-span-2">
-                <label className="block text-sm font-bold text-slate-700 mb-2">Tipo de Documento</label>
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Tipo de Documento</label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="tipoDoc" value="DNI" checked={tipoDoc === 'DNI'} onChange={(e) => setTipoDoc(e.target.value)} className="text-red-600 focus:ring-red-500"/>
+                    <input type="radio" name="tipoDoc" value="DNI" checked={tipoDoc === 'DNI'} onChange={(e) => setTipoDoc(e.target.value)} className="text-[#B5944B] focus:ring-[#B5944B] cursor-pointer"/>
                     <span className="text-sm font-medium text-slate-700">DNI</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="tipoDoc" value="CE" checked={tipoDoc === 'CE'} onChange={(e) => setTipoDoc(e.target.value)} className="text-red-600 focus:ring-red-500"/>
+                    <input type="radio" name="tipoDoc" value="CE" checked={tipoDoc === 'CE'} onChange={(e) => setTipoDoc(e.target.value)} className="text-[#B5944B] focus:ring-[#B5944B] cursor-pointer"/>
                     <span className="text-sm font-medium text-slate-700">Carnet Extranjería</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="tipoDoc" value="PASAPORTE" checked={tipoDoc === 'PASAPORTE'} onChange={(e) => setTipoDoc(e.target.value)} className="text-red-600 focus:ring-red-500"/>
+                    <input type="radio" name="tipoDoc" value="PASAPORTE" checked={tipoDoc === 'PASAPORTE'} onChange={(e) => setTipoDoc(e.target.value)} className="text-[#B5944B] focus:ring-[#B5944B] cursor-pointer"/>
                     <span className="text-sm font-medium text-slate-700">Pasaporte</span>
                   </label>
                 </div>
@@ -163,13 +163,13 @@ const buscarDNI = async (numeroDni: string) => {
 
               {/* CAMPO NÚMERO DE DOCUMENTO */}
               <div className="sm:col-span-2 relative">
-                <label className="block text-sm font-bold text-slate-700 mb-1">Número de Documento</label>
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1.5">Número de Documento</label>
                 <input
                   type="text"
                   required
                   value={documento}
                   onChange={handleDocumentoChange}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-red-500 focus:border-red-500 font-medium transition-all"
+                  className="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#B5944B] font-bold text-xs text-slate-800 transition-all bg-slate-50 focus:bg-white"
                   placeholder={tipoDoc === 'DNI' ? "8 dígitos" : "Ingrese su documento"}
                 />
                 {buscandoDni && (
@@ -186,78 +186,80 @@ const buscarDNI = async (numeroDni: string) => {
 
               {/* CAMPO NOMBRES */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Nombres</label>
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1.5">Nombres</label>
                 <input
                   type="text"
                   required
                   readOnly={camposBloqueados}
                   value={nombres}
                   onChange={(e) => setNombres(e.target.value)}
-                  className={`appearance-none block w-full px-4 py-3 border rounded-xl shadow-sm font-medium transition-all 
+                  className={`appearance-none block w-full px-4 py-3 border rounded-xl shadow-sm font-bold text-xs transition-all 
                     ${camposBloqueados 
-                      ? 'bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed' 
-                      : 'bg-white border-slate-300 focus:ring-red-500 focus:border-red-500 text-slate-900'}`}
+                      ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed' 
+                      : 'bg-slate-50 focus:bg-white border-slate-200 focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#B5944B] text-slate-800'}`}
                   placeholder={camposBloqueados ? "Autocompletado" : "Escriba sus nombres"}
                 />
               </div>
 
               {/* CAMPO APELLIDOS */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Apellidos</label>
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1.5">Apellidos</label>
                 <input
                   type="text"
                   required
                   readOnly={camposBloqueados}
                   value={apellidos}
                   onChange={(e) => setApellidos(e.target.value)}
-                  className={`appearance-none block w-full px-4 py-3 border rounded-xl shadow-sm font-medium transition-all 
+                  className={`appearance-none block w-full px-4 py-3 border rounded-xl shadow-sm font-bold text-xs transition-all 
                     ${camposBloqueados 
-                      ? 'bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed' 
-                      : 'bg-white border-slate-300 focus:ring-red-500 focus:border-red-500 text-slate-900'}`}
+                      ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed' 
+                      : 'bg-slate-50 focus:bg-white border-slate-200 focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#B5944B] text-slate-800'}`}
                   placeholder={camposBloqueados ? "Autocompletado" : "Escriba sus apellidos"}
                 />
               </div>
 
               {/* CAMPO CORREO */}
               <div className="sm:col-span-2">
-                <label className="block text-sm font-bold text-slate-700 mb-1">Correo Electrónico</label>
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1.5">Correo Electrónico</label>
                 <input
                   type="email"
                   required
                   value={correo}
                   onChange={(e) => setCorreo(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-red-500 focus:border-red-500 font-medium transition-all"
+                  className="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#B5944B] font-bold text-xs text-slate-800 transition-all bg-slate-50 focus:bg-white"
                   placeholder="ejemplo@unap.edu.pe o personal"
                 />
               </div>
 
               {/* CAMPO CONTRASEÑA */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Contraseña</label>
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1.5">Contraseña</label>
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-red-500 focus:border-red-500 font-medium transition-all"
+                  className="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#B5944B] font-bold text-xs text-slate-800 transition-all bg-slate-50 focus:bg-white"
                   placeholder="Contraseña segura"
                 />
               </div>
 
               {/* CAMPO REPETIR CONTRASEÑA */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Repetir Contraseña</label>
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1.5">Repetir Contraseña</label>
                 <input
                   type="password"
                   required
                   value={confirmarPassword}
                   onChange={(e) => setConfirmarPassword(e.target.value)}
-                  className={`appearance-none block w-full px-4 py-3 border rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-red-500 font-medium transition-all
-                    ${confirmarPassword && password !== confirmarPassword ? 'border-red-500 bg-red-50 focus:border-red-500' : 'border-slate-300 focus:border-red-500'}`}
+                  className={`appearance-none block w-full px-4 py-3 border rounded-xl shadow-sm placeholder-slate-400 focus:outline-none font-bold text-xs transition-all
+                    ${confirmarPassword && password !== confirmarPassword 
+                      ? 'border-rose-300 bg-rose-50 text-rose-800 focus:ring-2 focus:ring-rose-550/15 focus:border-rose-400' 
+                      : 'border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#B5944B] text-slate-800'}`}
                   placeholder="Confirme contraseña"
                 />
                 {confirmarPassword && password !== confirmarPassword && (
-                  <p className="mt-1 text-xs text-red-600 font-bold">Las contraseñas no coinciden</p>
+                  <p className="mt-1 text-xs text-rose-600 font-bold">Las contraseñas no coinciden</p>
                 )}
               </div>
 
@@ -267,10 +269,10 @@ const buscarDNI = async (numeroDni: string) => {
               <button
                 type="submit"
                 disabled={!isFormValid} 
-                className={`w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-sm text-sm font-black text-white transition-all 
+                className={`w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-sm text-xs font-black text-white uppercase tracking-wider transition-all cursor-pointer
                   ${!isFormValid 
-                    ? 'bg-slate-300 cursor-not-allowed' 
-                    : 'bg-red-600 hover:bg-red-700 hover:-translate-y-1 hover:shadow-lg'
+                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
+                    : 'bg-[#0B132B] hover:bg-[#121E3A] hover:-translate-y-0.5 hover:shadow-lg shadow-[#0B132B]/10'
                   }`}
               >
                 Completar Registro

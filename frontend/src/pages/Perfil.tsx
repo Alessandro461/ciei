@@ -136,15 +136,15 @@ export default function Perfil() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex flex-col pb-12">
       
-      {/* Navegación Superior */}
-      <nav className="bg-blue-950 text-white py-4 px-6 shadow-md border-b border-slate-800 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <Link to="/dashboard" className="flex items-center gap-2 text-sm font-bold text-blue-200 hover:text-white transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Volver al Panel Principal
+      {/* NAVEGACIÓN SUPERIOR UNIFICADA */}
+      <nav className="bg-gradient-to-r from-[#0B132B] to-[#121E3A] text-white shadow-xl z-10 sticky top-0 border-b border-[#1E293B]">
+        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link to="/dashboard" className="flex items-center gap-2.5 text-xs font-bold text-slate-350 hover:text-white transition-all hover:translate-x-[-2px] cursor-pointer">
+            <svg className="w-4 h-4 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            <span>Volver al Panel Principal</span>
           </Link>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] bg-yellow-400 text-slate-900 px-3 py-1 rounded-full font-black tracking-widest uppercase">
+            <span className="text-[10px] bg-[#D4AF37]/10 border border-[#D4AF37]/25 text-[#D4AF37] px-3 py-1.5 rounded-lg font-black tracking-wider uppercase">
               Configuración de Cuenta
             </span>
           </div>

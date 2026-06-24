@@ -546,19 +546,18 @@ export default function PanelComite() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex flex-col selection:bg-red-500 selection:text-white">
       
-      {/* NAVEGACIÓN SUPERIOR */}
-      <nav className="bg-slate-950 text-white shadow-xl z-10 border-b border-slate-800 relative">
-        <div className="absolute top-0 left-0 w-full h-full opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative z-10">
+      {/* NAVEGACIÓN SUPERIOR UNIFICADA */}
+      <nav className="bg-gradient-to-r from-[#0B132B] to-[#121E3A] text-white shadow-xl z-10 relative border-b border-[#1E293B]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative z-10">
           
           {/* Logo con Link a Landing Page */}
-          <div className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate('/')}>
-            <img src="/logo.png" alt="CIEI Logo" className="h-10" />
-            <div className="flex flex-col border-l border-slate-700 pl-4">
-              <span className="font-black text-lg tracking-tight leading-none text-white">Sala de Control</span>
-              <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest mt-1">Volver al Inicio</span>
+          <div className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity" onClick={() => navigate('/')}>
+            <div className="w-8 h-8 bg-[#D4AF37] rounded-lg flex items-center justify-center font-black text-[#0B132B] shadow-md shadow-[#D4AF37]/15">U</div>
+            <div className="flex flex-col">
+              <span className="font-black text-sm tracking-tight leading-none text-white">CIEI <span className="font-normal text-slate-400">| Sala de Control</span></span>
+              <span className="text-[9px] font-bold text-[#D4AF37] uppercase tracking-wider mt-0.5">Volver al Inicio</span>
             </div>
-            <span className="ml-4 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-wider">
+            <span className="ml-3 bg-[#D4AF37]/10 border border-[#D4AF37]/25 text-[#D4AF37] text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">
               {usuario?.rol}
             </span>
           </div>
@@ -566,14 +565,14 @@ export default function PanelComite() {
           {/* Menú de Perfil de Usuario */}
           <div className="relative">
             <div 
-              className="flex items-center gap-4 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors"
+              className="flex items-center gap-3 cursor-pointer hover:bg-white/10 px-3 py-1.5 rounded-xl transition-all"
               onClick={() => setMenuPerfilAbierto(!menuPerfilAbierto)}
             >
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-white">{usuario?.nombres}</p>
-                <p className="text-xs text-slate-400 font-medium">Opciones ▼</p>
+                <p className="text-xs font-bold text-white leading-tight">{usuario?.nombres}</p>
+                <p className="text-[9px] text-slate-400 font-bold tracking-wide uppercase">Menú ▼</p>
               </div>
-              <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center font-black shadow-md border-2 border-slate-800">
+              <div className="w-8 h-8 bg-slate-800 hover:bg-slate-700 text-[#D4AF37] rounded-full flex items-center justify-center font-black shadow-md border border-slate-700">
                 {usuario?.nombres.charAt(0)}
               </div>
             </div>
@@ -581,17 +580,13 @@ export default function PanelComite() {
             {/* Menú Desplegable */}
             {menuPerfilAbierto && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-fade-in overflow-hidden">
-                <button onClick={() => navigate('/perfil')} className="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-red-600 transition-colors flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                  Editar Perfil
+                <button onClick={() => navigate('/perfil')} className="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                  <span>Editar Perfil</span>
                 </button>
-                <button className="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-red-600 transition-colors flex items-center gap-2 border-b border-slate-100">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                  Configuración
-                </button>
-                <button onClick={cerrarSesion} className="w-full text-left px-4 py-3 text-sm font-black text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                  Cerrar Sesión
+                <button onClick={cerrarSesion} className="w-full text-left px-4 py-3 text-xs font-black text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 border-t border-slate-100">
+                  <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                  <span>Cerrar Sesión</span>
                 </button>
               </div>
             )}
@@ -599,22 +594,50 @@ export default function PanelComite() {
         </div>
       </nav>
 
-      {/* PESTAÑAS DE NAVEGACIÓN */}
-      <div className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-8 overflow-x-auto">
-            <button onClick={() => setPestañaActiva('expedientes')} className={`whitespace-nowrap py-4 px-1 border-b-4 font-extrabold text-sm transition-colors ${pestañaActiva === 'expedientes' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
+      {/* PESTAÑAS DE NAVEGACIÓN PREMIUM */}
+      <div className="bg-[#F8FAFC] py-5 px-4 sm:px-6 lg:px-8 border-b border-slate-250/60 sticky top-0 z-20 backdrop-blur-md bg-opacity-90">
+        <div className="max-w-7xl mx-auto flex justify-center sm:justify-start">
+          <div className="bg-slate-150/90 p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto max-w-full border border-slate-200/50">
+            <button 
+              onClick={() => setPestañaActiva('expedientes')} 
+              className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-bold text-xs transition-all uppercase tracking-wider ${
+                pestañaActiva === 'expedientes' 
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/30' 
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
+              }`}
+            >
               Bandeja de Expedientes
             </button>
             {(usuario?.rol === 'admin' || usuario?.rol === 'presidente') && (
               <>
-                <button onClick={() => setPestañaActiva('usuarios')} className={`whitespace-nowrap py-4 px-1 border-b-4 font-extrabold text-sm transition-colors ${pestañaActiva === 'usuarios' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
+                <button 
+                  onClick={() => setPestañaActiva('usuarios')} 
+                  className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-bold text-xs transition-all uppercase tracking-wider ${
+                    pestañaActiva === 'usuarios' 
+                      ? 'bg-white text-slate-900 shadow-sm border border-slate-200/30' 
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
+                  }`}
+                >
                   Gestión de Usuarios
                 </button>
-                <button onClick={() => setPestañaActiva('portal')} className={`whitespace-nowrap py-4 px-1 border-b-4 font-extrabold text-sm transition-colors ${pestañaActiva === 'portal' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
+                <button 
+                  onClick={() => setPestañaActiva('portal')} 
+                  className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-bold text-xs transition-all uppercase tracking-wider ${
+                    pestañaActiva === 'portal' 
+                      ? 'bg-white text-slate-900 shadow-sm border border-slate-200/30' 
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
+                  }`}
+                >
                   Configuración del Portal
                 </button>
-                <button onClick={() => setPestañaActiva('reportes')} className={`whitespace-nowrap py-4 px-1 border-b-4 font-extrabold text-sm transition-colors ${pestañaActiva === 'reportes' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
+                <button 
+                  onClick={() => setPestañaActiva('reportes')} 
+                  className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-bold text-xs transition-all uppercase tracking-wider ${
+                    pestañaActiva === 'reportes' 
+                      ? 'bg-white text-slate-900 shadow-sm border border-slate-200/30' 
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
+                  }`}
+                >
                   Reportes y Estadísticas
                 </button>
               </>
@@ -651,52 +674,56 @@ export default function PanelComite() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_5px_20px_rgb(0,0,0,0.03)] border border-slate-200 overflow-hidden">
-              <table className="min-w-full divide-y divide-slate-200">
+            <div className="bg-white rounded-3xl shadow-[0_5px_20px_rgb(0,0,0,0.03)] border border-slate-200/80 overflow-hidden">
+              <table className="min-w-full divide-y divide-slate-100">
                 <thead className="bg-slate-50/50">
                   <tr>
-                    <th className="px-6 py-5 text-left text-[11px] font-extrabold text-slate-500 uppercase">Expediente</th>
-                    <th className="px-6 py-5 text-left text-[11px] font-extrabold text-slate-500 uppercase">Investigador / Ciega</th>
-                    <th className="px-6 py-5 text-left text-[11px] font-extrabold text-slate-500 uppercase">Clasificación</th>
-                    <th className="px-6 py-5 text-center text-[11px] font-extrabold text-slate-500 uppercase">Estado</th>
-                    <th className="px-6 py-5 text-center text-[11px] font-extrabold text-slate-500 uppercase">SLA / Límite</th>
-                    <th className="px-6 py-5 text-right text-[11px] font-extrabold text-slate-500 uppercase">Acciones</th>
+                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Expediente</th>
+                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Investigador / Ciega</th>
+                    <th className="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Clasificación</th>
+                    <th className="px-6 py-5 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Estado</th>
+                    <th className="px-6 py-5 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">SLA / Límite</th>
+                    <th className="px-6 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-100">
                   {expedientesFiltrados.length === 0 ? (
-                    <tr><td colSpan={6} className="px-6 py-12 text-center text-slate-500 font-medium">No se encontraron expedientes.</td></tr>
+                    <tr><td colSpan={6} className="px-6 py-12 text-center text-slate-400 text-sm font-medium italic">No se encontraron expedientes.</td></tr>
                   ) : (
                     expedientesFiltrados.map((sol) => (
-                      <tr key={sol.id} className="hover:bg-slate-50/80 transition-colors group">
-                        <td className="px-6 py-5 text-sm font-black text-slate-900">{sol.numero_expediente}</td>
-                        <td className="px-6 py-5 text-sm font-medium text-slate-600">
-                          <div className="font-bold text-slate-800">{sol.nombres} {sol.apellidos}</div>
-                          <div className="mt-1 flex gap-1 flex-wrap mb-1.5">
+                      <tr key={sol.id} className="hover:bg-slate-50/50 transition-colors group">
+                        <td className="px-6 py-5 text-xs font-black text-slate-700 bg-slate-100/50 rounded-lg">
+                          <span className="px-2 py-1 bg-slate-100 rounded border border-slate-200">
+                            #{sol.numero_expediente}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 text-xs font-medium text-slate-600">
+                          <div className="font-bold text-slate-800 text-sm">{sol.nombres} {sol.apellidos}</div>
+                          <div className="mt-1.5 flex gap-1.5 flex-wrap mb-2">
                             {sol.usa_muestras_biologicas && (
-                              <span className="text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">🧪 Muestras</span>
+                              <span className="text-[8px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-250 px-2 py-0.5 rounded-md">🧪 Muestras</span>
                             )}
                             {sol.involucra_grupos_vulnerables && (
-                              <span className="text-[9px] font-bold bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded">👥 Vulnerables</span>
+                              <span className="text-[8px] font-black uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-255 px-2 py-0.5 rounded-md">👥 Vulnerables</span>
                             )}
                             {sol.es_invasivo && (
-                              <span className="text-[9px] font-bold bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded">🚨 Invasivo</span>
+                              <span className="text-[8px] font-black uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-250 px-2 py-0.5 rounded-md">🚨 Invasivo</span>
                             )}
                           </div>
-                          <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
                             {sol.identidad_revelada ? (
-                              <span className="text-[9px] font-bold bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded">
+                              <span className="text-[8px] font-black tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-250 px-2 py-0.5 rounded-md">
                                 Revelada (Revisores ven ID)
                               </span>
                             ) : (
                               <>
-                                <span className="text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
+                                <span className="text-[8px] font-black tracking-wider bg-rose-50 text-rose-700 border border-rose-250 px-2 py-0.5 rounded-md">
                                   Ciega (Revisores NO ven ID)
                                 </span>
                                 {(usuario?.rol === 'presidente' || usuario?.rol === 'secretario' || usuario?.rol === 'admin') && (
                                   <button
                                     onClick={() => desvelarIdentidad(sol.id)}
-                                    className="text-[9px] font-black text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 transition-colors"
+                                    className="text-[8px] font-black text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100 transition-all cursor-pointer"
                                   >
                                     Revelar ID
                                   </button>
@@ -705,18 +732,18 @@ export default function PanelComite() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-5 text-sm font-medium">
+                        <td className="px-6 py-5 text-xs font-medium">
                           {(usuario?.rol === 'presidente' || usuario?.rol === 'secretario' || usuario?.rol === 'admin') ? (
                             <select
                               value={sol.tipo_revision || 'completa'}
                               onChange={(e) => cambiarTipoRevision(sol.id, e.target.value)}
-                              className="text-xs font-bold bg-slate-50 border-2 border-slate-200 rounded-xl px-2 py-1.5 outline-none focus:border-red-500 cursor-pointer"
+                              className="text-xs font-bold bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none focus:border-[#B5944B] cursor-pointer shadow-sm hover:border-slate-350 transition-colors"
                             >
                               <option value="completa">Completa (Sesión Plena)</option>
                               <option value="expedita">Expedita (Rápida)</option>
                             </select>
                           ) : (
-                            <span className={`px-2 py-1 text-xs font-extrabold rounded uppercase border ${
+                            <span className={`px-2.5 py-1 text-[9px] font-black tracking-wider rounded-lg uppercase border ${
                               sol.tipo_revision === 'expedita' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-slate-100 text-slate-700 border-slate-200'
                             }`}>
                               {(sol.tipo_revision || 'completa')}
@@ -724,13 +751,13 @@ export default function PanelComite() {
                           )}
                         </td>
                         
-                        {/* ESTADOS DEL PROYECTO (Con Amarillo) */}
+                        {/* ESTADOS DEL PROYECTO */}
                         <td className="px-6 py-5 text-center">
                           <div className="flex flex-col items-center gap-1.5 justify-center">
-                            <span className={`px-3 py-1.5 inline-flex text-[11px] font-black uppercase tracking-wider rounded-lg border ${
-                              sol.estado_actual === 'aprobado' ? 'bg-green-50 text-green-700 border-green-200' :
-                              sol.estado_actual === 'observado' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                              sol.estado_actual === 'pendiente_pago' ? 'bg-yellow-100 text-yellow-800 border-yellow-400' :
+                            <span className={`px-2.5 py-1.5 inline-flex text-[9px] font-black uppercase tracking-wider rounded-lg border ${
+                              sol.estado_actual === 'aprobado' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                              sol.estado_actual === 'observado' ? 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm shadow-amber-500/5' :
+                              sol.estado_actual === 'pendiente_pago' ? 'bg-yellow-50 text-yellow-800 border-yellow-250 shadow-sm shadow-yellow-500/5' :
                               sol.estado_actual === 'enviado' ? 'bg-blue-50 text-blue-700 border-blue-200' : 
                               sol.estado_actual === 'revision_enmienda' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
                               'bg-slate-100 text-slate-700 border-slate-200'
@@ -738,7 +765,7 @@ export default function PanelComite() {
                               {sol.estado_actual.replace('_', ' ')}
                             </span>
                             {sol.estado_actual === 'en_revision' && sol.total_recomendaciones && sol.total_recomendaciones > 0 ? (
-                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded shadow-sm border border-emerald-200 animate-pulse">
+                              <span className="bg-emerald-55 text-emerald-800 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded border border-emerald-200 animate-pulse">
                                 💡 Recomendación Lista
                               </span>
                             ) : null}
@@ -750,16 +777,16 @@ export default function PanelComite() {
                           <SemaforoBadge fechaLimite={sol.fecha_limite} />
                         </td>
                         
-                        {/* BOTONES (Con Peaje) */}
-                        <td className="px-6 py-5 text-right text-sm space-x-2">
+                        {/* BOTONES ACCIÓN */}
+                        <td className="px-6 py-5 text-right text-xs space-x-1.5 whitespace-nowrap">
                           
                           {/* Botones Peaje y Asignación (Solo Presidente/Admin) */}
                           {(usuario?.rol === 'presidente' || usuario?.rol === 'admin') && sol.estado_actual === 'enviado' && (
                             <>
-                              <button onClick={() => exigirPago(sol.id)} className="bg-yellow-400 hover:bg-yellow-500 text-yellow-950 px-3 py-2 rounded-xl font-bold text-xs shadow-sm" title="Detener y cobrar derechos">
+                              <button onClick={() => exigirPago(sol.id)} className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer border border-amber-600 shadow-amber-500/10" title="Detener y cobrar derechos">
                                 Exigir Pago
                               </button>
-                              <button onClick={() => abrirModalAsignacion(sol.id)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl font-bold text-xs shadow-sm">
+                              <button onClick={() => abrirModalAsignacion(sol.id)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer border border-blue-700 shadow-blue-500/10">
                                 Asignar Revisor
                               </button>
                             </>
@@ -767,8 +794,8 @@ export default function PanelComite() {
 
                           {/* Aviso de Espera de Pago */}
                           {(usuario?.rol === 'presidente' || usuario?.rol === 'admin') && sol.estado_actual === 'pendiente_pago' && (
-                            <span className="text-xs font-bold text-yellow-600 italic bg-yellow-50 px-3 py-2 rounded-xl">
-                              ⏳ Esperando Voucher del Investigador...
+                            <span className="text-[10px] font-bold text-yellow-700 italic bg-yellow-50/50 border border-yellow-200 px-3 py-2 rounded-xl">
+                              ⏳ Esperando Voucher...
                             </span>
                           )}
 
@@ -776,22 +803,22 @@ export default function PanelComite() {
                           {(usuario?.rol === 'presidente' || usuario?.rol === 'admin') && sol.estado_actual === 'subsanado' && (
                             <button 
                               onClick={() => reactivarEvaluacionComite(sol.id)} 
-                              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl font-bold text-xs shadow-sm transition-all"
+                              className="bg-indigo-650 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-sm transition-all cursor-pointer border border-indigo-750"
                             >
                               Re-activar Evaluación
                             </button>
                           )}
                           {(usuario?.rol === 'presidente' || usuario?.rol === 'admin') && (sol.estado_actual === 'en_revision' || sol.estado_actual === 'subsanado' || sol.estado_actual === 'revision_enmienda') && (
-                            <button onClick={() => abrirModalDictamen(sol.id)} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-bold text-xs transition-colors">Dictaminar</button>
+                            <button onClick={() => abrirModalDictamen(sol.id)} className="bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all cursor-pointer border border-slate-950">Dictaminar</button>
                           )}
                           {(usuario?.rol === 'revisor' || usuario?.rol === 'admin') && sol.estado_actual !== 'aprobado' && sol.estado_actual !== 'pendiente_pago' && (
-                            <button onClick={() => navigate(`/comite/evaluar/${sol.id}`)} className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl font-bold text-xs transition-colors">Evaluar</button>
+                            <button onClick={() => navigate(`/comite/evaluar/${sol.id}`)} className="bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all cursor-pointer border border-slate-950">Evaluar</button>
                           )}
                           {sol.estado_actual === 'aprobado' && (
-                            <button onClick={() => descargarConstanciaPDF(sol.id, sol.numero_expediente)} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-bold text-xs transition-colors">Resolución</button>
+                            <button onClick={() => descargarConstanciaPDF(sol.id, sol.numero_expediente)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all cursor-pointer border border-emerald-750">Resolución</button>
                           )}
                           {sol.estado_actual === 'observado' && (
-                            <button onClick={() => descargarCartaObsPDF(sol.id, sol.numero_expediente)} className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl font-bold text-xs transition-colors">Carta Obs</button>
+                            <button onClick={() => descargarCartaObsPDF(sol.id, sol.numero_expediente)} className="bg-orange-600 hover:bg-orange-700 text-white px-3.5 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all cursor-pointer border border-orange-700">Carta Obs</button>
                           )}
                         </td>
                       </tr>
@@ -1116,17 +1143,17 @@ export default function PanelComite() {
       {/* MODAL 3: DICTAMEN OFICIAL DEL PRESIDENTE */}
       {modalDictamenAbierto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl scale-100 transition-transform flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl scale-100 transition-transform flex flex-col max-h-[90vh] border border-slate-200">
             
-            <div className="px-6 py-4 bg-slate-900 border-b flex justify-between items-center text-white shrink-0">
+            <div className="px-6 py-4.5 bg-gradient-to-r from-[#0B132B] to-[#121E3A] border-b border-[#1E293B] flex justify-between items-center text-white shrink-0">
               <div>
-                <h3 className="text-lg font-black">Dictamen Oficial del Comité</h3>
+                <h3 className="text-sm font-black uppercase tracking-wider">Dictamen Oficial del Comité</h3>
                 {detallesSolicitud && (
-                  <p className="text-[10px] text-red-400 font-bold uppercase tracking-wider mt-0.5">Expediente: {detallesSolicitud.solicitud.numero_expediente}</p>
+                  <p className="text-[10px] text-[#D4AF37] font-black uppercase tracking-wider mt-0.5">Expediente: {detallesSolicitud.solicitud.numero_expediente}</p>
                 )}
               </div>
-              <button onClick={() => setModalDictamenAbierto(false)} className="text-slate-400 hover:text-white transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              <button onClick={() => setModalDictamenAbierto(false)} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
             </div>
 
@@ -1134,8 +1161,8 @@ export default function PanelComite() {
               
               {/* Alerta de vulnerabilidades o características especiales del proyecto según el Manual */}
               {detallesSolicitud && (detallesSolicitud.solicitud.usa_muestras_biologicas || detallesSolicitud.solicitud.involucra_grupos_vulnerables || detallesSolicitud.solicitud.es_invasivo) && (
-                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-xs text-amber-800 space-y-2 shadow-sm">
-                  <h5 className="font-black flex items-center gap-1.5 text-sm">
+                <div className="bg-amber-50/50 border border-amber-250/70 rounded-2xl p-5 text-xs text-amber-800 space-y-2 shadow-sm">
+                  <h5 className="font-black flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-900">
                     ⚠️ REQUISITO NORMATIVO (CIEI UNA-Puno)
                   </h5>
                   <p className="font-semibold">
@@ -1156,8 +1183,8 @@ export default function PanelComite() {
               )}
 
               {/* Sección 1: Recomendaciones Técnicas de los Revisores */}
-              <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest">📋 Recomendaciones Técnicas Recibidas</h4>
+              <div className="space-y-3 bg-slate-50 border border-slate-200/80 p-4 rounded-2xl">
+                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Recomendaciones Técnicas Recibidas</h4>
                 
                 {!detallesSolicitud ? (
                   <p className="text-xs text-slate-400 font-bold animate-pulse py-2 text-center">Cargando recomendaciones del revisor...</p>
@@ -1166,18 +1193,18 @@ export default function PanelComite() {
                 ) : (
                   <div className="space-y-3">
                     {detallesSolicitud.recomendaciones.map((rec: any) => (
-                      <div key={rec.id} className="p-3 bg-white border border-slate-100 rounded-xl shadow-sm">
+                      <div key={rec.id} className="p-3.5 bg-white border border-slate-200/60 rounded-xl shadow-sm">
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-[11px] font-bold text-slate-700">Revisor: <span className="font-extrabold">{rec.revisor_nombres} {rec.revisor_apellidos}</span></span>
+                          <span className="text-[11px] font-bold text-slate-700">Revisor: <span className="font-extrabold text-slate-850">{rec.revisor_nombres} {rec.revisor_apellidos}</span></span>
                           <span className={`px-2 py-0.5 text-[9px] font-black uppercase rounded ${
-                            rec.resultado === 'aprobado' ? 'bg-emerald-100 text-emerald-800' :
-                            rec.resultado === 'observado' ? 'bg-amber-100 text-amber-800 font-bold' :
-                            'bg-red-100 text-red-800'
+                            rec.resultado === 'aprobado' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                            rec.resultado === 'observado' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                            'bg-rose-50 text-rose-700 border border-rose-200'
                           }`}>
                             {rec.resultado}
                           </span>
                         </div>
-                        <div className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-200/50 whitespace-pre-wrap font-medium">
+                        <div className="text-xs text-slate-650 bg-slate-50/50 p-2.5 rounded border border-slate-200/40 whitespace-pre-wrap font-medium">
                           {rec.comentarios_investigador || 'Sin comentarios detallados.'}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2.5">
@@ -1185,18 +1212,18 @@ export default function PanelComite() {
                             <button
                               type="button"
                               onClick={() => descargarChecklistRevisor(rec.id, `${rec.revisor_nombres} ${rec.revisor_apellidos}`)}
-                              className="text-[9px] font-black text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-lg border border-indigo-100/50 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                              className="text-[9px] font-black text-slate-700 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg border border-slate-200 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                             >
-                              ⬇️ Descargar Anexo {detallesSolicitud.solicitud.tipo_investigacion === 'animales' ? '7' : 'G'} (Checklist PDF)
+                              Descargar Anexo {detallesSolicitud.solicitud.tipo_investigacion === 'animales' ? '7' : 'G'} (Checklist PDF)
                             </button>
                           )}
                           {rec.revisor_rol_asignacion === 'principal' && (
                             <button
                               type="button"
                               onClick={() => descargarCartaRevision(detallesSolicitud.solicitud.id, detallesSolicitud.solicitud.numero_expediente)}
-                              className="text-[9px] font-black text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg border border-blue-100/50 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                              className="text-[9px] font-black text-slate-700 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg border border-slate-200 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                             >
-                              ⬇️ Descargar Carta de Revisión Consolidada (PDF)
+                              Descargar Carta de Revisión Consolidada
                             </button>
                           )}
                         </div>
@@ -1208,25 +1235,25 @@ export default function PanelComite() {
 
               {/* Sección: Informes de Seguimiento Post-Aprobación / Enmiendas */}
               {detallesSolicitud && detallesSolicitud.seguimiento && detallesSolicitud.seguimiento.length > 0 && (
-                <div className="space-y-3 bg-indigo-50 p-4 rounded-2xl border border-indigo-200">
-                  <h4 className="text-xs font-black text-indigo-950 uppercase tracking-widest">📈 Informes de Seguimiento Recibidos</h4>
+                <div className="space-y-3 bg-slate-100/50 border border-slate-200 p-4 rounded-2xl">
+                  <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Informes de Seguimiento Recibidos</h4>
                   <div className="space-y-3">
                     {detallesSolicitud.seguimiento.map((seg: any) => (
-                      <div key={seg.id} className="p-3 bg-white border border-indigo-100 rounded-xl shadow-sm">
+                      <div key={seg.id} className="p-3 bg-white border border-slate-200/60 rounded-xl shadow-sm">
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-black text-indigo-900 uppercase">{seg.titulo.replace('_', ' ')}</span>
+                          <span className="text-xs font-black text-slate-800 uppercase">{seg.titulo.replace('_', ' ')}</span>
                           <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
                             {seg.estado_seguimiento}
                           </span>
                         </div>
-                        {seg.descripcion && <p className="text-xs text-slate-600 mb-2 font-medium">{seg.descripcion}</p>}
+                        {seg.descripcion && <p className="text-xs text-slate-650 mb-2 font-medium">{seg.descripcion}</p>}
                         {seg.ruta_archivo && (
                           <button
                             type="button"
                             onClick={() => descargarArchivoSeguimiento(seg.id, seg.titulo)}
-                            className="text-[10px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-all"
+                            className="text-[9px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-all cursor-pointer border border-slate-200"
                           >
-                            ⬇️ Descargar Adjunto ({seg.tipo_reporte})
+                            Descargar Adjunto ({seg.tipo_reporte})
                           </button>
                         )}
                       </div>
@@ -1237,12 +1264,12 @@ export default function PanelComite() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Categoría de Riesgo (Cap. VI)</label>
+                  <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Categoría de Riesgo (Cap. VI)</label>
                   <select 
                     required
                     value={categoriaRiesgo}
                     onChange={(e) => setCategoriaRiesgo(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-black text-slate-700 outline-none focus:border-red-500 bg-slate-50 cursor-pointer transition-colors"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-[#B5944B] bg-slate-50 cursor-pointer transition-colors shadow-sm"
                   >
                     <option value="bajo">Bajo o Ningún Riesgo</option>
                     <option value="moderado">Riesgo Moderado (Requiere informes trimestrales)</option>
@@ -1251,43 +1278,43 @@ export default function PanelComite() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Decisión Oficial Definitiva</label>
+                  <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Decisión Oficial Definitiva</label>
                   <select 
                     required
                     value={nuevoEstadoDictamen}
                     onChange={(e) => setNuevoEstadoDictamen(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-black text-slate-700 outline-none focus:border-red-500 bg-slate-50 cursor-pointer transition-colors"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-[#B5944B] bg-slate-50 cursor-pointer transition-colors shadow-sm"
                   >
                     <option value="" disabled>-- Seleccione una Decisión Oficial --</option>
-                    <option value="aprobado">🟢 Dictamen Favorable: APROBAR (Genera Constancia de Aprobación)</option>
-                    <option value="observado">🟠 Dictamen con Observaciones: OBSERVAR (Genera Carta de Observaciones y habilita subsanación)</option>
-                    <option value="rechazado">🔴 Dictamen Desfavorable: RECHAZAR</option>
+                    <option value="aprobado">Aprobado: Dictamen Favorable (Genera Constancia)</option>
+                    <option value="observado">Observado: Requiere Subsanación (Genera Carta)</option>
+                    <option value="rechazado">Rechazado: Proyecto Desfavorable</option>
                   </select>
                 </div>
               </div>
 
               {/* Comentarios Finales */}
               <div>
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Comentarios Oficiales (Irán en el Documento PDF/Resolución)</label>
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Comentarios Oficiales (Irán en el PDF Oficial)</label>
                 <textarea
                   required
                   rows={4}
                   value={comentariosDictamen}
                   onChange={(e) => setComentariosDictamen(e.target.value)}
                   placeholder="Redacte detalladamente las observaciones o consideraciones finales del comité de ética..."
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-red-500 outline-none resize-none text-sm font-medium"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/25 focus:border-[#B5944B] outline-none resize-none text-xs font-medium text-slate-800"
                 />
               </div>
 
               {/* Botones */}
               <div className="flex gap-3 pt-4 border-t border-slate-100 shrink-0">
-                <button type="button" onClick={() => setModalDictamenAbierto(false)} className="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-colors">
+                <button type="button" onClick={() => setModalDictamenAbierto(false)} className="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-colors cursor-pointer">
                   Cancelar
                 </button>
-                <button type="submit" disabled={procesandoDictamen || !nuevoEstadoDictamen} className={`flex-1 px-4 py-3 rounded-xl font-black text-sm text-white transition-all shadow-md ${
-                  procesandoDictamen || !nuevoEstadoDictamen ? 'bg-slate-300 shadow-none cursor-not-allowed text-slate-500' : 'bg-red-600 hover:bg-red-700'
+                <button type="submit" disabled={procesandoDictamen || !nuevoEstadoDictamen} className={`flex-1 px-4 py-3 rounded-xl font-black text-xs text-white uppercase tracking-wider transition-all shadow-md cursor-pointer ${
+                  procesandoDictamen || !nuevoEstadoDictamen ? 'bg-slate-200 shadow-none cursor-not-allowed text-slate-400' : 'bg-slate-900 hover:bg-slate-800 border border-slate-950 shadow-slate-900/10'
                 }`}>
-                  {procesandoDictamen ? 'Registrando Dictamen...' : 'Registrar Decisión Oficial'}
+                  {procesandoDictamen ? 'Registrando...' : 'Registrar Decisión Oficial'}
                 </button>
               </div>
 
