@@ -141,9 +141,10 @@ export default function ExpedienteDetalle() {
       });
       setHistorial(resHistorial.data.documentos || []);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al cargar el expediente:", error);
-      alert("No se pudo obtener la información del expediente.");
+      const msg = error.response?.data?.error || "No se pudo obtener la información del expediente.";
+      alert(msg);
       navigate('/dashboard');
     } finally {
       setCargando(false);
