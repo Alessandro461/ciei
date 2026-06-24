@@ -188,8 +188,17 @@ export default function EvaluarExpediente() {
       
       enlace.parentNode?.removeChild(enlace);
       window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Hubo un problema al intentar descargar el archivo.');
+    } catch (error: any) {
+      if (error.response?.data instanceof Blob) {
+        try {
+          const text = await error.response.data.text();
+          const parsed = JSON.parse(text);
+          alert(parsed.error || 'Hubo un problema al intentar descargar el archivo.');
+          return;
+        } catch (e) {}
+      }
+      const msg = error.response?.data?.error || 'Hubo un problema al intentar descargar el archivo.';
+      alert(msg);
     }
   };
 
@@ -214,8 +223,17 @@ export default function EvaluarExpediente() {
       setPreviewName(nombreOriginal);
       setPreviewType(extension);
       
-    } catch (error) {
-      alert('Error al intentar abrir el visor.');
+    } catch (error: any) {
+      if (error.response?.data instanceof Blob) {
+        try {
+          const text = await error.response.data.text();
+          const parsed = JSON.parse(text);
+          alert(parsed.error || 'Error al intentar abrir el visor.');
+          return;
+        } catch (e) {}
+      }
+      const msg = error.response?.data?.error || 'Error al intentar abrir el visor.';
+      alert(msg);
     }
   };
 
