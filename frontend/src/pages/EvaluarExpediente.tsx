@@ -31,7 +31,7 @@ export default function EvaluarExpediente() {
 
   const [miRolAsignacion, setMiRolAsignacion] = useState<string | null>(null);
   const [recomendaciones, setRecomendaciones] = useState<any[]>([]);
-  const [expandedRecs, setExpandedRecs] = useState<Record<number, boolean>>({});
+  const [revisorModalInfo, setRevisorModalInfo] = useState<any | null>(null);
 
   // Estados del Visor Principal (Columna Derecha)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -563,11 +563,6 @@ export default function EvaluarExpediente() {
                   {recomendaciones
                     .filter(r => r.revisor_rol_asignacion === 'secundario')
                     .map((rec) => {
-                      const isExpanded = !!expandedRecs[rec.id];
-                      const toggleExpanded = () => {
-                        setExpandedRecs(prev => ({ ...prev, [rec.id]: !prev[rec.id] }));
-                      };
-
                       // Mapear respuestas
                       const resps = Array.isArray(rec.checklist_respuestas) 
                         ? rec.checklist_respuestas 
@@ -582,7 +577,7 @@ export default function EvaluarExpediente() {
                       }).length;
 
                       return (
-                        <div key={rec.id} className="bg-white p-4 rounded-xl border border-indigo-100/50 text-xs space-y-3 shadow-sm transition-all duration-300">
+                        <div key={rec.id} className="bg-white p-4 rounded-xl border border-slate-250/80 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-100/10 text-xs space-y-3 shadow-sm transition-all duration-300">
                           <div className="flex justify-between items-center">
                             <span className="font-bold text-slate-800 flex items-center gap-1.5">
                               👤 {rec.revisor_nombres} {rec.revisor_apellidos}
@@ -604,102 +599,20 @@ export default function EvaluarExpediente() {
                           </div>
 
                           {rec.comentarios && (
-                            <p className="bg-slate-50/80 p-2.5 rounded-lg border border-slate-200/80 text-slate-600 italic pl-3 border-l-4 border-l-indigo-400">
+                            <p className="bg-slate-50/80 p-2.5 rounded-lg border border-slate-200/80 text-slate-650 italic pl-3 border-l-4 border-l-indigo-400">
                               "{rec.comentarios.split('--- EVALUACIÓN DETALLADA')[0].trim()}"
                             </p>
                           )}
 
-                          {/* Botón para expandir/colapsar el checklist */}
+                          {/* Botón para abrir el Modal de Inspección Detallada */}
                           <button
                             type="button"
-                            onClick={toggleExpanded}
-                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-indigo-50/60 hover:bg-indigo-100/60 text-indigo-700 font-extrabold text-[9px] uppercase tracking-wider transition-all cursor-pointer"
+                            onClick={() => setRevisorModalInfo(rec)}
+                            className="w-full flex items-center justify-between px-3 py-2 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-100/30 text-indigo-700 font-extrabold text-[9px] uppercase tracking-wider rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                           >
-                            <span>📋 {isExpanded ? 'Ocultar Criterios Detallados' : 'Ver Criterios Detallados'}</span>
-                            <span className="text-[9px] transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                              ▼
-                            </span>
+                            <span>📋 Inspeccionar Checklist Detallada</span>
+                            <span className="text-[10px] font-bold">➔</span>
                           </button>
-
-                          {isExpanded && (
-                            <div className="space-y-1.5 bg-slate-50/50 p-3 rounded-xl border border-slate-200/60 text-[10px] text-slate-655 animate-fade-in">
-                              {rec.checklist_respuestas ? (
-                                (() => {
-                                  return resps.length > 0 ? (
-                                    resps.map((resp: any, rIdx: number) => {
-                                      const textToShow = resp.texto || resp.id;
-                                      const calif = resp.valoracion || resp.calif || 'No aplica';
-                                      const just = resp.justificacion_texto || resp.just || '';
-                                      
-                                      return (
-                                        <div key={rIdx} className="border-b border-slate-200/40 pb-1.5 last:border-0 last:pb-0">
-                                          <span className="font-semibold text-slate-700">• {textToShow}: </span>
-                                          <span className={`font-black text-[9px] px-1.5 py-0.5 rounded-md ${
-                                            calif === 'Adecuado' 
-                                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
-                                              : 'bg-rose-50 text-rose-700 border border-rose-100'
-                                          }`}>
-                                            [{calif}]
-                                          </span>
-                                          {just && <span className="italic text-slate-500 block pl-3.5 mt-0.5 font-medium">↳ "{just}"</span>}
-                                        </div>
-                                      );
-                                    })
-                                  ) : (
-                                    <span className="italic">No se registraron respuestas detalladas en el checklist.</span>
-                                  );
-                                })()
-                              ) : (
-                                <>
-                                  {rec.aspecto_metodologico_calif && (
-                                    <div>
-                                      <span className="font-bold">1. Metodológico:</span>
-                                      <span className={`ml-1 font-bold ${rec.aspecto_metodologico_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                        [{rec.aspecto_metodologico_calif}]
-                                      </span>
-                                      {rec.aspecto_metodologico_just && <span className="italic"> - {rec.aspecto_metodologico_just}</span>}
-                                    </div>
-                                  )}
-                                  {rec.aspecto_etico_calif && (
-                                    <div>
-                                      <span className="font-bold">2. Ético:</span>
-                                      <span className={`ml-1 font-bold ${rec.aspecto_etico_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                        [{rec.aspecto_etico_calif}]
-                                      </span>
-                                      {rec.aspecto_etico_just && <span className="italic"> - {rec.aspecto_etico_just}</span>}
-                                    </div>
-                                  )}
-                                  {rec.aspecto_legal_calif && (
-                                    <div>
-                                      <span className="font-bold">3. Legal:</span>
-                                      <span className={`ml-1 font-bold ${rec.aspecto_legal_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                        [{rec.aspecto_legal_calif}]
-                                      </span>
-                                      {rec.aspecto_legal_just && <span className="italic"> - {rec.aspecto_legal_just}</span>}
-                                    </div>
-                                  )}
-                                  {rec.aspecto_presupuestal_calif && (
-                                    <div>
-                                      <span className="font-bold">4. Presupuestal:</span>
-                                      <span className={`ml-1 font-bold ${rec.aspecto_presupuestal_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                        [{rec.aspecto_presupuestal_calif}]
-                                      </span>
-                                      {rec.aspecto_presupuestal_just && <span className="italic"> - {rec.aspecto_presupuestal_just}</span>}
-                                    </div>
-                                  )}
-                                  {rec.hoja_informacion_calif && (
-                                    <div>
-                                      <span className="font-bold">5. Consentimiento:</span>
-                                      <span className={`ml-1 font-bold ${rec.hoja_informacion_calif === 'Adecuado' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                        [{rec.hoja_informacion_calif}]
-                                      </span>
-                                      {rec.hoja_informacion_just && <span className="italic"> - {rec.hoja_informacion_just}</span>}
-                                    </div>
-                                  )}
-                                </>
-                              )}
-                            </div>
-                          )}
                         </div>
                       );
                     })}
@@ -882,6 +795,174 @@ export default function EvaluarExpediente() {
         </div>
 
       </main>
+
+      {/* MODAL DE INSPECCIÓN DETALLADA DE REVISORES SECUNDARIOS */}
+      {revisorModalInfo && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/80 max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-fade-in">
+            
+            {/* Header del Modal */}
+            <div className="bg-gradient-to-r from-[#0B132B] to-[#1C2541] text-white px-6 py-4 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">👤</span>
+                <div>
+                  <h3 className="font-extrabold text-sm leading-tight">
+                    {revisorModalInfo.revisor_nombres} {revisorModalInfo.revisor_apellidos}
+                  </h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Recomendación Técnica Recibida</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-lg border ${
+                  revisorModalInfo.resultado === 'aprobado' ? 'bg-emerald-500/20 text-emerald-350 border-emerald-500/30' :
+                  revisorModalInfo.resultado === 'observado' ? 'bg-amber-500/20 text-amber-350 border-amber-500/30' :
+                  'bg-red-500/20 text-red-350 border-red-500/30'
+                }`}>
+                  {revisorModalInfo.resultado}
+                </span>
+                <button 
+                  onClick={() => setRevisorModalInfo(null)}
+                  className="text-slate-400 hover:text-white hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Cuerpo del Modal */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-5">
+              
+              {/* Comentarios Generales */}
+              {revisorModalInfo.comentarios && (
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-black text-slate-550 uppercase tracking-wider">Comentarios Generales y Conclusión:</h4>
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs text-slate-700 font-medium leading-relaxed italic pl-4 border-l-4 border-l-indigo-500">
+                    "{revisorModalInfo.comentarios.split('--- EVALUACIÓN DETALLADA')[0].trim()}"
+                  </div>
+                </div>
+              )}
+
+              {/* Criterios de la Checklist */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center border-b border-slate-150 pb-2 shrink-0">
+                  <h4 className="text-[11px] font-black text-slate-550 uppercase tracking-wider">Criterios Evaluados (Checklist):</h4>
+                  {(() => {
+                    const resps = Array.isArray(revisorModalInfo.checklist_respuestas) 
+                      ? revisorModalInfo.checklist_respuestas 
+                      : (typeof revisorModalInfo.checklist_respuestas === 'object' && revisorModalInfo.checklist_respuestas !== null 
+                          ? Object.keys(revisorModalInfo.checklist_respuestas).map(k => ({ id: k, ...revisorModalInfo.checklist_respuestas[k] })) 
+                          : []);
+                    const obsCount = resps.filter((r: any) => {
+                      const val = r.valoracion || r.calif || '';
+                      return val === 'Insuficiente' || val === 'Inadecuado';
+                    }).length;
+
+                    return obsCount > 0 ? (
+                      <span className="bg-rose-50 text-rose-700 px-2.5 py-0.5 rounded-lg text-[9px] font-black border border-rose-200">
+                        ⚠️ {obsCount} observaciones encontradas
+                      </span>
+                    ) : (
+                      <span className="bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-lg text-[9px] font-black border border-emerald-200">
+                        ✓ Todos los criterios adecuados
+                      </span>
+                    );
+                  })()}
+                </div>
+
+                <div className="space-y-2.5 max-h-[350px] overflow-y-auto pr-1">
+                  {revisorModalInfo.checklist_respuestas ? (
+                    (() => {
+                      const resps = Array.isArray(revisorModalInfo.checklist_respuestas) 
+                        ? revisorModalInfo.checklist_respuestas 
+                        : (typeof revisorModalInfo.checklist_respuestas === 'object' && revisorModalInfo.checklist_respuestas !== null 
+                            ? Object.keys(revisorModalInfo.checklist_respuestas).map(k => ({ id: k, ...revisorModalInfo.checklist_respuestas[k] })) 
+                            : []);
+                      
+                      return resps.length > 0 ? (
+                        resps.map((resp: any, rIdx: number) => {
+                          const textToShow = resp.texto || resp.id;
+                          const calif = resp.valoracion || resp.calif || 'No aplica';
+                          const just = resp.justificacion_texto || resp.just || '';
+                          const isNegative = calif === 'Insuficiente' || calif === 'Inadecuado';
+                          
+                          return (
+                            <div 
+                              key={rIdx} 
+                              className={`p-3.5 rounded-2xl border transition-all ${
+                                isNegative 
+                                  ? 'bg-rose-50/20 border-rose-200/80 shadow-sm shadow-rose-100/10' 
+                                  : 'bg-slate-50/50 border-slate-200/60'
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-3 text-xs leading-normal font-bold text-slate-800">
+                                <span className="flex-1">{textToShow}</span>
+                                <span className={`font-black text-[9px] px-2 py-0.5 rounded-md border shrink-0 ${
+                                  calif === 'Adecuado' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                  isNegative ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                  'bg-blue-50 text-blue-700 border-blue-200'
+                                }`}>
+                                  {calif}
+                                </span>
+                              </div>
+                              {just && (
+                                <div className="mt-2 pl-3.5 border-l-2 border-rose-300/60 text-slate-500 italic text-[11px] font-medium leading-relaxed">
+                                  ↳ "{just}"
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p className="italic text-slate-400 text-xs py-4 text-center">No se registraron respuestas detalladas.</p>
+                      );
+                    })()
+                  ) : (
+                    <div className="space-y-2.5">
+                      {[
+                        { label: 'Aspecto Metodológico', calif: revisorModalInfo.aspecto_metodologico_calif, just: revisorModalInfo.aspecto_metodologico_just },
+                        { label: 'Aspecto Ético', calif: revisorModalInfo.aspecto_etico_calif, just: revisorModalInfo.aspecto_etico_just },
+                        { label: 'Aspecto Legal', calif: revisorModalInfo.aspecto_legal_calif, just: revisorModalInfo.aspecto_legal_just },
+                        { label: 'Aspecto Presupuestal', calif: revisorModalInfo.aspecto_presupuestal_calif, just: revisorModalInfo.aspecto_presupuestal_just },
+                        { label: 'Consentimiento Informado', calif: revisorModalInfo.hoja_informacion_calif, just: revisorModalInfo.hoja_informacion_just },
+                      ].map((item, idx) => {
+                        if (!item.calif) return null;
+                        const isNegative = item.calif === 'Insuficiente' || item.calif === 'Inadecuado';
+                        return (
+                          <div key={idx} className={`p-3.5 rounded-2xl border ${isNegative ? 'bg-rose-50/20 border-rose-200/80 shadow-sm' : 'bg-slate-50/50 border-slate-200/60'}`}>
+                            <div className="flex justify-between items-center text-xs font-bold text-slate-800">
+                              <span>{item.label}</span>
+                              <span className={`font-black text-[9px] px-2 py-0.5 rounded-md border ${
+                                item.calif === 'Adecuado' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'
+                              }`}>{item.calif}</span>
+                            </div>
+                            {item.just && (
+                              <div className="mt-2 pl-3.5 border-l-2 border-rose-300/60 text-slate-500 italic text-[11px] font-medium leading-relaxed">
+                                ↳ "{item.just}"
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+            </div>
+
+            {/* Footer del Modal */}
+            <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-end shrink-0">
+              <button 
+                onClick={() => setRevisorModalInfo(null)}
+                className="bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all hover:scale-[1.02] active:scale-95 shadow-md shadow-slate-800/10 cursor-pointer"
+              >
+                Cerrar Ventana
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
