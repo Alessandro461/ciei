@@ -204,6 +204,39 @@ CREATE TABLE public.avisos (
 
 ALTER TABLE public.avisos OWNER TO postgres;
 
+
+--
+-- Name: formatos_oficiales; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.formatos_oficiales (
+    id integer NOT NULL,
+    titulo character varying(255) NOT NULL,
+    nombre_archivo_original character varying(255),
+    ruta_archivo character varying(255),
+    actualizado_at timestamp without time zone DEFAULT now(),
+    categoria character varying(50) DEFAULT 'humanos'::character varying
+);
+
+
+ALTER TABLE public.formatos_oficiales OWNER TO postgres;
+
+--
+-- Name: formatos_oficiales_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.formatos_oficiales_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.formatos_oficiales_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.formatos_oficiales_id_seq OWNED BY public.formatos_oficiales.id;
+
 --
 -- TOC entry 234 (class 1259 OID 49172)
 -- Name: avisos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -524,6 +557,13 @@ ALTER TABLE ONLY public.avisos ALTER COLUMN id SET DEFAULT nextval('public.aviso
 
 
 --
+-- Name: formatos_oficiales id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.formatos_oficiales ALTER COLUMN id SET DEFAULT nextval('public.formatos_oficiales_id_seq'::regclass);
+
+
+--
 -- TOC entry 4935 (class 2604 OID 32965)
 -- Name: dictamenes id; Type: DEFAULT; Schema: public; Owner: postgres
 --
@@ -786,6 +826,14 @@ ALTER TABLE ONLY public.asignaciones_revision
 
 ALTER TABLE ONLY public.avisos
     ADD CONSTRAINT avisos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: formatos_oficiales formatos_oficiales_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.formatos_oficiales
+    ADD CONSTRAINT formatos_oficiales_pkey PRIMARY KEY (id);
 
 
 --

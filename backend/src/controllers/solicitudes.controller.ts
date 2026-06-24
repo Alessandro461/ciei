@@ -9,32 +9,104 @@ import { sellarDocumentosAprobados } from '../utils/pdfStamper';
 import { getAnexoByTipo } from '../constants/anexosChecklist';
 import { PdfTemplateService } from '../services/PdfTemplateService';
 
+// Helper: Formatea fecha en español con formato dd de mm del yyyy (con opción de rellenar día con ceros)
+const formatSpanishDate = (date: Date, padDay: boolean = true): string => {
+    const dayVal = date.getDate();
+    const day = padDay ? String(dayVal).padStart(2, '0') : String(dayVal);
+    const months = [
+        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} de ${month} del ${year}`;
+};
+
+// Helper: Formatea fecha en español con formato dd de mm yyyy (sin "del" antes del año, para listas de documentos)
+const formatSpanishDateNoDel = (date: Date, padDay: boolean = true): string => {
+    const dayVal = date.getDate();
+    const day = padDay ? String(dayVal).padStart(2, '0') : String(dayVal);
+    const months = [
+        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} de ${month} ${year}`;
+};
+
 // Helper: Dibuja el encabezado institucional formal (logos y texto centralizado)
-const drawHeader = (doc: PDFKit.PDFDocument) => {
-    const logoPath = path.join(__dirname, '../../../frontend/public/logo.png');
-    const logoVriPath = path.join(__dirname, '../../../frontend/public/logovri.png');
+const drawHeader = (doc: PDFKit.PDFDocument, tipo: 'carta' | 'constancia' = 'carta') => {
+    const logoCieiPath = path.join(__dirname, '../assets/logos/logo_ciei.png');
+    const logoUnapPath = path.join(__dirname, '../assets/logos/logo_unap.png');
     
-    if (fs.existsSync(logoPath)) {
+    doc.save();
+
+    // Temporarily set margins to 0 to prevent automatic page breaks when drawing header
+    const oldMargins = { ...doc.page.margins };
+    doc.page.margins = { top: 0, bottom: 0, left: 0, right: 0 };
+
+    if (fs.existsSync(logoUnapPath)) {
         try {
-            doc.image(logoPath, 50, 40, { width: 50 });
+            // UNAP Shield on the left, height=55
+            doc.image(logoUnapPath, 50, 30, { height: 55 });
         } catch (e) {
             console.error("Error al incrustar logo UNAP:", e);
         }
     }
     
-    if (fs.existsSync(logoVriPath)) {
+    if (fs.existsSync(logoCieiPath)) {
         try {
-            doc.image(logoVriPath, 510, 40, { width: 50 });
+            // CIEI banner on the right, width=75
+            doc.image(logoCieiPath, 480, 38, { width: 75 });
         } catch (e) {
-            console.error("Error al incrustar logo VRI:", e);
+            console.error("Error al incrustar logo CIEI:", e);
         }
     }
 
-    doc.fontSize(11).font('Helvetica-Bold').fillColor('#0F172A').text('UNIVERSIDAD NACIONAL DEL ALTIPLANO', 110, 45, { align: 'center', width: 390 });
-    doc.fontSize(9).font('Helvetica-Bold').fillColor('#475569').text('VICERRECTORADO DE INVESTIGACIÓN', 110, 60, { align: 'center', width: 390 });
-    doc.fontSize(9).font('Helvetica').text('Comité Institucional de Ética en Investigación (CIEI)', 110, 72, { align: 'center', width: 390 });
+    doc.fillColor('#1C325A');
+    
+    // Primera línea: Universidad Nacional del Altiplano – Puno
+    doc.fontSize(12).font('Times-Bold').text('Universidad Nacional del Altiplano – Puno', 110, 42, { align: 'center', width: 360 });
+    
+    // Segunda línea: VICERRECTORADO DE INVESTIGACIÓN
+    doc.fontSize(10).font('Times-Bold').text('VICERRECTORADO DE INVESTIGACIÓN', 110, 58, { align: 'center', width: 360 });
+    
+    // Tercera línea:
+    const linea3 = tipo === 'carta' 
+        ? 'COMITÉ INSTITUCIONAL DE ÉTICA EN INVESTIGACIÓN'
+        : 'COMITÉ INSTITUCIONAL DE ETICA EN INVESTIGACION';
+    doc.fontSize(10).font('Times-Bold').text(linea3, 110, 72, { align: 'center', width: 360 });
 
-    doc.moveTo(50, 100).lineTo(560, 100).lineWidth(1.5).strokeColor('#0F172A').stroke();
+    doc.moveTo(50, 92).lineTo(560, 92).lineWidth(1.5).strokeColor('#1C325A').stroke();
+    
+    // Restore margins
+    doc.page.margins = oldMargins;
+    doc.restore();
+};
+
+// Helper: Dibuja el pie de página
+const drawFooter = (doc: PDFKit.PDFDocument, tipo: 'carta' | 'constancia', anio: number) => {
+    doc.save();
+    
+    // Temporarily set margins to 0 to prevent automatic page breaks when drawing footer
+    const oldMargins = { ...doc.page.margins };
+    doc.page.margins = { top: 0, bottom: 0, left: 0, right: 0 };
+
+    doc.fontSize(10).font('Times-Roman').fillColor('#000000');
+    
+    if (tipo === 'carta') {
+        doc.text('C.c. Archivo', 50, 765, { align: 'left' });
+        doc.text(String(anio), 50, 777, { align: 'left' });
+        doc.text('ETP/demp', 50, 789, { align: 'left' });
+    } else {
+        doc.text('C.c. Archivo', 50, 770, { align: 'left' });
+        doc.text(String(anio), 50, 782, { align: 'left' });
+    }
+    
+    // Restore margins
+    doc.page.margins = oldMargins;
+    doc.restore();
 };
 
 // Helper: Analizador de observaciones para dividirlas en aspectos específicos
@@ -380,7 +452,8 @@ export const asignarRevisor = async (req: AuthRequest, res: Response): Promise<v
                 return;
             }
 
-            // 3. Declaración de CoI (Anexo N)
+            // 3. Declaración de CoI (Anexo N) - ELIMINADO POR REQUERIMIENTO (Se firma de forma física/descargable)
+            /*
             const anio = new Date().getFullYear();
             const coiRes = await pool.query(
                 'SELECT id FROM declaraciones_coi WHERE usuario_id = $1 AND anio = $2',
@@ -390,12 +463,15 @@ export const asignarRevisor = async (req: AuthRequest, res: Response): Promise<v
                 res.status(400).json({ error: `El revisor ${revisor.nombres} ${revisor.apellidos} no ha firmado su Declaración Jurada de Conflicto de Interés (Anexo N) para el año vigente.` });
                 return;
             }
+            */
 
-            // 4. Confidencialidad (Anexo L) para invitados
+            // 4. Confidencialidad (Anexo L) para invitados - ELIMINADO POR REQUERIMIENTO
+            /*
             if (revisor.es_invitado && !revisor.acepto_confidencialidad_anexol) {
                 res.status(400).json({ error: `El revisor externo/invitado ${revisor.nombres} ${revisor.apellidos} aún no ha firmado el Acuerdo de Confidencialidad obligatorio (Anexo L).` });
                 return;
             }
+            */
         }
 
         // Si todas las validaciones pasaron, actualizamos y registramos las asignaciones
@@ -592,11 +668,7 @@ export const descargarResolucion = async (req: AuthRequest, res: Response): Prom
         
         if (documentosRes && documentosRes.rows) {
             documentosRes.rows.forEach(docRow => {
-                const fStr = new Date(docRow.fecha_subida).toLocaleDateString('es-PE', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                });
+                const fStr = formatSpanishDateNoDel(new Date(docRow.fecha_subida), true);
                 if (docRow.tipo_anexo === 'proyecto') {
                     proyectoFechaStr = fStr;
                 } else if (docRow.tipo_anexo === 'consentimiento') {
@@ -611,22 +683,34 @@ export const descargarResolucion = async (req: AuthRequest, res: Response): Prom
         );
         let presidenteNombre = 'Dra. Edith Tello Palma';
         if (presidenteRes && presidenteRes.rowCount !== null && presidenteRes.rowCount > 0) {
-            presidenteNombre = `${presidenteRes.rows[0].nombres} ${presidenteRes.rows[0].apellidos}`;
+            const rawNom = `${presidenteRes.rows[0].nombres} ${presidenteRes.rows[0].apellidos}`;
+            if (!rawNom.startsWith('Dr.') && !rawNom.startsWith('Dra.')) {
+                if (rawNom.includes('Edith') || rawNom.includes('Tello')) {
+                    presidenteNombre = `Dra. ${rawNom}`;
+                } else {
+                    presidenteNombre = `Dr. ${rawNom}`;
+                }
+            } else {
+                presidenteNombre = rawNom;
+            }
         }
 
-        const doc = new PDFDocument({ margin: 50, size: 'A4' });
+        const doc = new PDFDocument({ 
+            size: 'A4', 
+            margins: { top: 110, bottom: 80, left: 50, right: 50 },
+            bufferPages: true 
+        });
+
         res.setHeader('Content-disposition', `attachment; filename="Resolucion_${expediente.numero_expediente}.pdf"`);
         res.setHeader('Content-type', 'application/pdf');
         
         doc.pipe(res); 
 
-        // Encabezado
-        drawHeader(doc);
-        doc.y = 120;
-
         // Título de la Constancia
         const correlativo = String(expediente.id).padStart(3, '0');
-        doc.fontSize(12).font('Helvetica-Bold').fillColor('#0F172A').text(`CONSTANCIA N° ${correlativo}/CIEI UNA-Puno`, { align: 'center' });
+        const anioEmision = new Date(expediente.updated_at || expediente.created_at).getFullYear();
+
+        doc.fontSize(12).font('Times-Bold').fillColor('#000000').text(`CONSTANCIA N° ${correlativo}/CIEI UNA-Puno`, { align: 'center' });
         doc.moveDown(1.2);
 
         // Párrafo introductorio
@@ -635,63 +719,61 @@ export const descargarResolucion = async (req: AuthRequest, res: Response): Prom
             month: 'long'
         });
         
-        doc.fontSize(11).font('Helvetica').fillColor('#334155').text(
+        doc.fontSize(12).font('Times-Roman').fillColor('#000000').text(
             `El Presidente del Comité Institucional de Ética en Investigación de la Universidad Nacional del Altiplano de Puno (CIEI UNA-Puno), hace constar que el proyecto de investigación que se señala a continuación fue `,
-            { continued: true, align: 'justify', lineGap: 3 }
+            { continued: true, align: 'justify', lineGap: 4 }
         );
-        doc.font('Helvetica-Bold').text('APROBADO', { continued: true });
-        doc.font('Helvetica').text(' en reunión ordinaria de fecha ', { continued: true });
-        doc.font('Helvetica-Bold').text(`${dateReunion}`, { continued: true });
-        doc.font('Helvetica').text(' por el pleno de los miembros de CIEI UNA-Puno.', { continued: false });
+        doc.font('Times-Bold').text('APROBADO', { continued: true });
+        doc.font('Times-Roman').text(' en reunión ordinaria de fecha ', { continued: true });
+        doc.font('Times-Bold').text(`${dateReunion}`, { continued: true });
+        doc.font('Times-Roman').text(' por el pleno de los miembros de CIEI UNA-Puno.', { continued: false });
         doc.moveDown(1.5);
 
         // Bloque de detalles alineados
-        let currentY = doc.y;
-        
-        doc.fontSize(10).font('Helvetica-Bold').fillColor('#0F172A').text('Título del Proyecto', 50, currentY, { width: 140 });
-        doc.font('Helvetica').fillColor('#334155').text(`: “${expediente.titulo_proyecto.toUpperCase()}”`, 190, currentY, { width: 370, align: 'justify', lineGap: 3 });
-        
-        const titleHeight = doc.heightOfString(`: “${expediente.titulo_proyecto.toUpperCase()}”`, { width: 370 });
-        currentY += Math.max(titleHeight, 15) + 10;
+        doc.fontSize(12).font('Times-Bold').text('Título del Proyecto            :', { align: 'justify' });
+        doc.font('Times-Roman').text(`“${expediente.titulo_proyecto.toUpperCase()}”`, { align: 'justify', lineGap: 4 });
+        doc.moveDown(1);
 
-        doc.font('Helvetica-Bold').fillColor('#0F172A').text('Código de inscripción', 50, currentY, { width: 140 });
-        doc.font('Helvetica').fillColor('#334155').text(`: ${expediente.numero_expediente}`, 190, currentY, { width: 370 });
-        currentY += 22;
+        doc.font('Times-Bold').text('Código de inscripción       :', { align: 'justify' });
+        doc.font('Times-Roman').text(`${expediente.numero_expediente}-CIEI UNA Puno.`, { align: 'justify' });
+        doc.moveDown(1);
 
-        doc.font('Helvetica-Bold').fillColor('#0F172A').text('Investigador Principal 1', 50, currentY, { width: 140 });
-        doc.font('Helvetica').fillColor('#334155').text(`: ${expediente.nombres} ${expediente.apellidos}`, 190, currentY, { width: 370 });
-        currentY += 22;
+        doc.font('Times-Bold').text('Investigador Principal 1   :', { align: 'justify' });
+        doc.font('Times-Roman').text(`${expediente.nombres} ${expediente.apellidos}`, { align: 'justify' });
+        doc.moveDown(1);
 
         if (expediente.investigadores_asociados) {
             const asociados = expediente.investigadores_asociados.split(/[,\n]/).map((a: string) => a.trim()).filter((a: string) => a.length > 0);
             asociados.forEach((asoc: string, idx: number) => {
-                doc.font('Helvetica-Bold').fillColor('#0F172A').text(`Investigador Principal ${idx + 2}`, 50, currentY, { width: 140 });
-                doc.font('Helvetica').fillColor('#334155').text(`: ${asoc}`, 190, currentY, { width: 370 });
-                currentY += 22;
+                doc.font('Times-Bold').text(`Investigador Principal ${idx + 2}   :`, { align: 'justify' });
+                doc.font('Times-Roman').text(`${asoc}`, { align: 'justify' });
+                doc.moveDown(1);
             });
         }
         
-        doc.y = currentY + 10;
+        doc.moveDown(0.5);
 
         // Evaluación de documentos
-        doc.fontSize(11).font('Helvetica').fillColor('#334155').text('La aprobación incluyó la evaluación de los documentos finales siguientes:', { lineGap: 3 });
-        doc.moveDown(0.3);
-        doc.text(`• Proyecto de Investigación; recibido en fecha: ${proyectoFechaStr}.`, { indent: 15, lineGap: 3 });
+        doc.fontSize(12).font('Times-Roman').text('La aprobación incluyó la evaluación de los ', { continued: true, lineGap: 4 })
+           .font('Times-Bold').text('documentos finales', { continued: true })
+           .font('Times-Roman').text(' siguientes:', { continued: false });
+        doc.moveDown(0.5);
+        doc.text(`• Proyecto de Investigación; recibido en fecha: ${proyectoFechaStr}.`, { indent: 15, lineGap: 4 });
         if (consentimientoFechaStr) {
-            doc.text(`• Consentimiento Informado; recibido en fecha: ${consentimientoFechaStr}.`, { indent: 15, lineGap: 3 });
+            doc.text(`• Consentimiento Informado; recibido en fecha ${consentimientoFechaStr}.`, { indent: 15, lineGap: 4 });
         }
         doc.moveDown(1.5);
 
         // Párrafo estándar legal ético
-        doc.fontSize(11).font('Helvetica').text(
+        doc.fontSize(12).font('Times-Roman').text(
             'La APROBACIÓN, considera el cumplimiento de los estándares éticos nacionales e internacionales a los cuales se acoge la Universidad Nacional del Altiplano, los lineamientos científicos y éticos, el balance riesgo – beneficio, la calificación del equipo investigador y las características de confidencialidad y reserva de los datos obtenidos, entre otros.',
-            { align: 'justify', lineGap: 3 }
+            { align: 'justify', lineGap: 4 }
         );
         doc.moveDown(1);
 
         doc.text(
             'Las enmiendas, eventualidades o cualquier cambio en las características del presente Proyecto de Investigación, deberá ser reportada de acuerdo a los plazos y normas establecidas. El investigador principal reportará cada seis meses el progreso del estudio y alcanzará el informe respectivo al término de éste.',
-            { align: 'justify', lineGap: 3 }
+            { align: 'justify', lineGap: 4 }
         );
         doc.moveDown(1);
 
@@ -699,44 +781,38 @@ export const descargarResolucion = async (req: AuthRequest, res: Response): Prom
         const dateInicio = new Date(expediente.updated_at || new Date());
         const dateFin = new Date(dateInicio);
         dateFin.setFullYear(dateInicio.getFullYear() + 1);
-        const dateFinStr = dateFin.toLocaleDateString('es-PE', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
+        const dateFinStr = formatSpanishDate(dateFin, false);
 
         doc.text(
             `La APROBACIÓN tiene vigencia desde la emisión del presente documento hasta el `,
-            { continued: true, align: 'justify', lineGap: 3 }
+            { continued: true, align: 'justify', lineGap: 4 }
         );
-        doc.font('Helvetica-Bold').text(`${dateFinStr}`, { continued: true });
-        doc.font('Helvetica').text(', pudiendo ser renovada, previa evaluación del estado del Proyecto de Investigación por lo menos 30 días previo a la fecha de vencimiento.', { continued: false });
-        doc.moveDown(2);
+        doc.font('Times-Bold').text(`${dateFinStr}`, { continued: true });
+        doc.font('Times-Roman').text(', pudiendo ser renovada, previa evaluación del estado del Proyecto de Investigación por lo menos 30 días previo a la fecha de vencimiento.', { continued: false });
+        doc.moveDown(1.5);
 
         // Fecha Puno
-        const dateCarta = dateInicio.toLocaleDateString('es-PE', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-        doc.fontSize(11).font('Helvetica').text(`Puno, ${dateCarta}.`, { align: 'right' });
+        const dateCarta = formatSpanishDate(dateInicio, false);
+        doc.fontSize(12).font('Times-Roman').text(`Puno, ${dateCarta}.`, { align: 'justify' });
 
-        // Firma del Presidente
-        if (doc.y > 640) {
+        // Firma del Presidente (Dra. Edith Tello Palma)
+        if (doc.y > 670) {
             doc.addPage();
-            drawHeader(doc);
-            doc.y = 120;
         }
 
-        doc.moveDown(3.5);
-        const sigY = doc.y;
-        doc.moveTo(170, sigY).lineTo(420, sigY).lineWidth(1).strokeColor('#64748B').stroke();
-        doc.moveDown(0.5);
-
-        doc.fontSize(11).font('Helvetica-Bold').fillColor('#0F172A').text(presidenteNombre, { align: 'center' });
-        doc.fontSize(9).font('Helvetica').fillColor('#475569').text('Presidente', { align: 'center' });
+        doc.moveDown(3);
+        doc.fontSize(10).font('Times-Bold').fillColor('#000000').text(presidenteNombre, { align: 'center' });
+        doc.text('Presidente', { align: 'center' });
         doc.text('Comité Institucional de Ética en Investigación', { align: 'center' });
         doc.text('UNA-Puno', { align: 'center' });
+
+        // Pintar encabezado y pies de página dinámicos al final
+        const range = doc.bufferedPageRange();
+        for (let i = range.start; i < range.start + range.count; i++) {
+            doc.switchToPage(i);
+            drawHeader(doc, 'constancia');
+            drawFooter(doc, 'constancia', anioEmision);
+        }
 
         doc.end();
 
@@ -777,87 +853,87 @@ export const descargarCartaObservaciones = async (req: AuthRequest, res: Respons
         );
         let secretarioNombre = 'M.SC. JUAN GUILLERMO ARCAYA COYURI';
         if (secretarioRes && secretarioRes.rowCount !== null && secretarioRes.rowCount > 0) {
-            secretarioNombre = `${secretarioRes.rows[0].nombres} ${secretarioRes.rows[0].apellidos}`.toUpperCase();
+            const rawNom = `${secretarioRes.rows[0].nombres} ${secretarioRes.rows[0].apellidos}`.toUpperCase();
+            if (!rawNom.startsWith('M.SC.') && !rawNom.startsWith('MSC.') && !rawNom.startsWith('DR.') && !rawNom.startsWith('DRA.')) {
+                if (rawNom.includes('ARCAYA') || rawNom.includes('GUILLERMO')) {
+                    secretarioNombre = `M.SC. ${rawNom}`;
+                } else {
+                    secretarioNombre = rawNom;
+                }
+            } else {
+                secretarioNombre = rawNom;
+            }
         }
 
-        const doc = new PDFDocument({ margin: 50, size: 'A4' });
+        const doc = new PDFDocument({ 
+            size: 'A4', 
+            margins: { top: 110, bottom: 80, left: 50, right: 50 },
+            bufferPages: true 
+        });
+
         res.setHeader('Content-disposition', `attachment; filename="Carta_Observaciones_${expediente.numero_expediente}.pdf"`);
         res.setHeader('Content-type', 'application/pdf');
         
         doc.pipe(res); 
 
-        // Encabezado
-        drawHeader(doc);
-        doc.y = 120;
-
         // Fecha de la carta
-        const dateCarta = new Date().toLocaleDateString('es-PE', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-        doc.fontSize(11).font('Helvetica').fillColor('#334155').text(`Puno, ${dateCarta}`, { align: 'right' });
+        const dateCarta = formatSpanishDate(new Date(), true);
+        doc.fontSize(12).font('Times-Roman').fillColor('#000000').text(`Puno, ${dateCarta}`, { align: 'right' });
         doc.moveDown(0.5);
 
         // Código de Carta
         const correlativo = String(expediente.id).padStart(3, '0');
         const anio = new Date(expediente.created_at).getFullYear();
         const numCarta = `CARTA N° ${correlativo}-${anio}-CIEI-VRI-UNA PUNO.`;
-        doc.fontSize(11).font('Helvetica-Bold').fillColor('#0F172A').text(numCarta, { align: 'left' });
+        doc.fontSize(12).font('Times-Bold').text(numCarta, { align: 'left' });
         doc.moveDown(1.5);
 
         // Destinatario
-        doc.fontSize(11).font('Helvetica-Bold').fillColor('#0F172A').text(`Señor(a) Investigador(a):`);
-        doc.fontSize(11).font('Helvetica-Bold').text(`${expediente.nombres.toUpperCase()} ${expediente.apellidos.toUpperCase()}`);
-        doc.fontSize(10).font('Helvetica-Oblique').fillColor('#475569').text(`${expediente.correo_institucional}`);
-        doc.fontSize(11).font('Helvetica-Bold').fillColor('#0F172A').text(`Investigador Principal`);
-        doc.fontSize(11).font('Helvetica').text(`Ciudad. -`);
+        doc.fontSize(12).font('Times-Bold').text(`Dra. / Dr. ${expediente.nombres.toUpperCase()} ${expediente.apellidos.toUpperCase()}`);
+        doc.fontSize(12).font('Times-Roman').text(`(${expediente.correo_institucional})`);
+        doc.fontSize(12).font('Times-Roman').text('Investigador Principal');
+        doc.fontSize(12).font('Times-Roman').text('Ciudad. -');
         doc.moveDown(1.5);
 
         // Saludo
-        doc.fontSize(11).font('Helvetica-Bold').text(`De nuestra mayor consideración:`);
+        doc.fontSize(12).font('Times-Roman').text('De nuestra mayor consideración:');
         doc.moveDown(0.5);
 
         // Cuerpo de la carta
-        const dateSession = new Date(expediente.updated_at || expediente.created_at).toLocaleDateString('es-PE', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-        const constanciaFutura = `${correlativo}/CIEI UNA-Puno`;
+        const dateSession = formatSpanishDate(new Date(expediente.updated_at || expediente.created_at), true);
+        const constanciaFutura = `${correlativo}/CIEI UNA Puno`;
 
-        doc.fontSize(11).font('Helvetica').fillColor('#334155').text(
+        doc.fontSize(12).font('Times-Roman').text(
             `Por medio del presente, tenemos el agrado de dirigirnos a usted para saludarle muy cordialmente y en atención a la solicitud de autorización para el desarrollo del proyecto de Investigación `,
-            { continued: true, align: 'justify', lineGap: 3 }
+            { continued: true, align: 'justify', lineGap: 4 }
         );
-        doc.font('Helvetica-Bold').text(`“${expediente.titulo_proyecto.toUpperCase()}”`, { continued: true });
-        doc.font('Helvetica').text(
-            ` indicarles que después de la evaluación en reunión ordinaria del CIEI de fecha `,
+        doc.font('Times-Bold').text(`“${expediente.titulo_proyecto.toUpperCase()}”`, { continued: true });
+        doc.font('Times-Roman').text(
+            `  indicarles que después de la evaluación en reunión ordinaria del CIEI de fecha `,
             { continued: true }
         );
-        doc.font('Helvetica-Bold').text(`${dateSession}`, { continued: true });
-        doc.font('Helvetica').text(
-            `, luego de una evaluación el dictamen es de `,
+        doc.font('Times-Bold').text(`${dateSession}`, { continued: true });
+        doc.font('Times-Roman').text(
+            `, luego de una evaluación el dictamen de `,
             { continued: true }
         );
-        doc.font('Helvetica-Bold').text(`APROBADO CON OBSERVACIONES`, { continued: true });
-        doc.font('Helvetica').text(
+        doc.font('Times-Bold').text(`APROBADO CON OBSERVACIONES`, { continued: true });
+        doc.font('Times-Roman').text(
             `, por lo cual se emitirá la `,
             { continued: true }
         );
-        doc.font('Helvetica-Bold').text(`CONSTANCIA DE APROBACIÓN N° ${constanciaFutura}`, { continued: true });
-        doc.font('Helvetica').text(
-            `; y a su vez deberá: `,
+        doc.font('Times-Bold').text(`CONSTANCIA DE APROBACIÓN N° ${constanciaFutura}`, { continued: true });
+        doc.font('Times-Roman').text(
+            `; y a su vez  deberá: `,
             { continued: true }
         );
-        doc.font('Helvetica-Bold').text(`“presentar en físico el proyecto para la firma y sello correspondiente en cada una de sus partes”`, { continued: true });
-        doc.font('Helvetica').text(`.`, { continued: false });
+        doc.font('Times-Italic').text(`“presentar en físico el proyecto para la firma y sello correspondiente en cada una de sus partes”`, { continued: true });
+        doc.font('Times-Roman').text(`.`, { continued: false });
         doc.moveDown(1.2);
 
-        doc.fontSize(11).font('Helvetica').text(
-            `Para la entrega de la Constancia de Aprobación correspondiente, deberá cumplir con revisar y corregir lo siguiente:`,
-            { align: 'justify', lineGap: 3 }
-        );
+        doc.font('Times-Bold').text('Para la entrega de la Constancia de Aprobación', { continued: true, lineGap: 4 })
+           .font('Times-Roman').text(' correspondiente, ', { continued: true })
+           .font('Times-Bold').text('deberá cumplir con revisar y corregir lo siguiente:', { continued: false });
         doc.moveDown(1);
 
         // Clasificar observaciones
@@ -865,13 +941,13 @@ export const descargarCartaObservaciones = async (req: AuthRequest, res: Respons
 
         const renderSection = (title: string, list: string[]) => {
             if (list.length === 0) return;
-            doc.fontSize(11).font('Helvetica-Bold').fillColor('#0F172A').text(title, { lineGap: 3 });
+            doc.fontSize(12).font('Times-Bold').text(title, { lineGap: 4 });
             doc.moveDown(0.3);
             list.forEach(item => {
-                doc.fontSize(10).font('Helvetica').fillColor('#334155').text(`• ${item}`, {
+                doc.fontSize(12).font('Times-Roman').text(`• ${item}`, {
                     indent: 15,
                     align: 'justify',
-                    lineGap: 3
+                    lineGap: 4
                 });
                 doc.moveDown(0.2);
             });
@@ -888,10 +964,10 @@ export const descargarCartaObservaciones = async (req: AuthRequest, res: Respons
             rawComments.forEach(line => {
                 const trimmed = line.trim();
                 if (trimmed) {
-                    doc.fontSize(10).font('Helvetica').fillColor('#334155').text(`• ${trimmed}`, {
+                    doc.fontSize(12).font('Times-Roman').text(`• ${trimmed}`, {
                         indent: 15,
                         align: 'justify',
-                        lineGap: 3
+                        lineGap: 4
                     });
                     doc.moveDown(0.2);
                 }
@@ -900,33 +976,30 @@ export const descargarCartaObservaciones = async (req: AuthRequest, res: Respons
         }
 
         // Advertencia legal
-        doc.fontSize(10).font('Helvetica').fillColor('#475569').text(
-            `Se requiere que el investigador principal presente un escrito en físico y digital (https://ciei.unap.edu.pe/) que evidencie el levantamiento de observaciones punto por punto, señalando número de folios y resaltar lo corregido para corroborar las correcciones efectuadas, todo ello dentro del plazo de `,
-            { continued: true, align: 'justify', lineGap: 3 }
-        );
-        doc.font('Helvetica-Bold').text(`30 días`, { continued: true });
-        doc.font('Helvetica').text(
-            `, bajo apercibimiento de declarar el abandono del procedimiento (Art. 202 T.U.O. Ley N° 27444).`,
-            { continued: false }
+        doc.fontSize(12).font('Times-Roman').text(
+            `Se requiere que el investigador principal presente un escrito en físico y digital (https://ciei.unap.edu.pe/) que evidencie el levantamiento de observaciones punto por punto, señalando número de folios y resaltar lo corregido para corroborar las correcciones efectuadas, todo ello dentro del plazo de 30 días, bajo apercibimiento de declarar el abandono del procedimiento (Art. 202 T.U.O. Ley N° 27444).`,
+            { align: 'justify', lineGap: 4 }
         );
         doc.moveDown(2);
 
-        // Firma del Secretario
+        // Firma del Secretario (M.SC. JUAN GUILLERMO ARCAYA COYURI)
         if (doc.y > 670) {
             doc.addPage();
-            drawHeader(doc);
-            doc.y = 120;
         }
 
-        doc.fontSize(11).font('Helvetica').fillColor('#0F172A').text('Atentamente.', { align: 'left' });
+        doc.fontSize(12).font('Times-Roman').text('Atentamente.', { align: 'left' });
         doc.moveDown(4.5);
 
-        const sigY = doc.y;
-        doc.moveTo(170, sigY).lineTo(420, sigY).lineWidth(1).strokeColor('#64748B').stroke();
-        doc.moveDown(0.5);
+        doc.fontSize(11).font('Times-Bold').text(secretarioNombre, { align: 'center' });
+        doc.fontSize(11).font('Times-Roman').text('Secretario Técnico del Comité Institucional de Ética en Investigación - UNAP', { align: 'center' });
 
-        doc.fontSize(11).font('Helvetica-Bold').text(secretarioNombre, { align: 'center' });
-        doc.fontSize(9).font('Helvetica').fillColor('#475569').text('Secretario Técnico del Comité Institucional de Ética en Investigación - UNAP', { align: 'center' });
+        // Pintar encabezado y pies de página dinámicos al final
+        const range = doc.bufferedPageRange();
+        for (let i = range.start; i < range.start + range.count; i++) {
+            doc.switchToPage(i);
+            drawHeader(doc, 'carta');
+            drawFooter(doc, 'carta', anio);
+        }
 
         doc.end();
 

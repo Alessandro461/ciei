@@ -18,3 +18,9 @@ uploads/
 .idea/
 *.local
 **/uploads/evaluaciones/ejemplo_checklist_anexog.pdf
+
+# Generated files and local workspace assets
+documentos_generados/
+/CIEI LOGO.png
+/Logo_UNAP (1).png
+

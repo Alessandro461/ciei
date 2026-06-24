@@ -54,36 +54,17 @@ export default function DashboardRevisor() {
   // Control del Menú Lateral
   const [vistaActiva, setVistaActiva] = useState<'inicio' | 'pendientes' | 'subsanaciones' | 'historial'>('inicio');
 
-  // Estados de Seguridad y Firmas (Anexo L y N)
-  const [mostrarOverlayAnexoL, setMostrarOverlayAnexoL] = useState(false);
-  const [mostrarOverlayAnexoN, setMostrarOverlayAnexoN] = useState(false);
-  const [firmaCoI, setFirmaCoI] = useState('');
-  const [firmando, setFirmando] = useState(false);
-
   const cargarEstadoSeguridad = async () => {
     try {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
 
-      // 1. Cargar Perfil Actualizado
+      // Cargar Perfil Actualizado
       const resPerfil = await axios.get(`${API_URL}/api/usuarios/perfil`, { headers });
       const user = resPerfil.data.usuario;
       setUsuario(user);
-
-      // 2. Cargar Estado de Declaración CoI (Anexo N)
-      const resCoI = await axios.get(`${API_URL}/api/usuarios/declarar-coi/estado`, { headers });
-
-      // Decidir qué overlay mostrar
-      if (user.es_invitado && !user.acepto_confidencialidad_anexol) {
-        setMostrarOverlayAnexoL(true);
-      } else if (!resCoI.data.firmado) {
-        setMostrarOverlayAnexoN(true);
-      } else {
-        setMostrarOverlayAnexoL(false);
-        setMostrarOverlayAnexoN(false);
-      }
     } catch (error) {
-      console.error('Error al cargar estado de seguridad del revisor:', error);
+      console.error('Error al cargar perfil del revisor:', error);
     }
   };
 
@@ -117,44 +98,7 @@ export default function DashboardRevisor() {
     cargarBandejaRevisor();
   }, [navigate]);
 
-  const aceptarAnexoL = async () => {
-    setFirmando(true);
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/api/usuarios/aceptar-confidencialidad`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      alert('¡Acuerdo de Confidencialidad (Anexo L) aceptado exitosamente!');
-      await cargarBandejaRevisor();
-    } catch (error) {
-      alert('Error al aceptar el Acuerdo de Confidencialidad.');
-    } finally {
-      setFirmando(false);
-    }
-  };
 
-  const firmarAnexoN = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!firmaCoI.trim()) {
-      alert('Por favor, escriba su nombre completo como firma digital.');
-      return;
-    }
-    setFirmando(true);
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/api/usuarios/declarar-coi`, {
-        firma_digital: firmaCoI
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      alert('¡Declaración de Conflicto de Interés (Anexo N) firmada exitosamente!');
-      await cargarBandejaRevisor();
-    } catch (error) {
-      alert('Error al firmar la Declaración.');
-    } finally {
-      setFirmando(false);
-    }
-  };
 
   const cerrarSesion = () => {
     localStorage.clear();
@@ -404,84 +348,7 @@ export default function DashboardRevisor() {
         </div>
       </main>
 
-      {/* OVERLAY ANEXO L: ACUERDO DE CONFIDENCIALIDAD PARA REVISORES INVITADOS */}
-      {mostrarOverlayAnexoL && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-slate-100 flex flex-col max-h-[90vh] animate-fade-in">
-            <div className="text-center mb-6">
-              <span className="text-4xl">🔏</span>
-              <h2 className="text-2xl font-black text-slate-900 mt-2">Acuerdo de Confidencialidad y Compromiso Ético</h2>
-              <p className="text-xs font-bold text-red-600 uppercase tracking-wider mt-1">Anexo L - Revisor Invitado</p>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto text-sm text-slate-600 bg-slate-50 p-6 rounded-2xl border border-slate-200/60 leading-relaxed mb-6 space-y-4">
-              <p className="font-bold text-slate-800">CÓDIGO DE ÉTICA Y CONFIDENCIALIDAD DEL CIEI UNA-PUNO</p>
-              <p>
-                Como revisor externo/invitado del Comité Institucional de Ética en Investigación de la Universidad Nacional del Altiplano, me comprometo formalmente a mantener estricta confidencialidad respecto a toda la información contenida en los expedientes y protocolos de investigación que me sean asignados para evaluación.
-              </p>
-              <p>
-                Entiendo que los documentos presentados por los investigadores constituyen propiedad intelectual bajo revisión y que revelar cualquier aspecto de los mismos a terceros, o utilizarlos para beneficio personal o académico propio, constituye una infracción ética gravísima.
-              </p>
-              <p>
-                Asimismo, declaro que actuaré con objetividad científica, rigor académico e imparcialidad, ciñéndome estrictamente a los criterios bioéticos normados en el manual oficial del comité.
-              </p>
-            </div>
 
-            <button 
-              onClick={aceptarAnexoL}
-              disabled={firmando}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-slate-900/20 active:scale-95"
-            >
-              {firmando ? 'Firmando Acuerdo...' : 'Acepto y Firmo el Acuerdo de Confidencialidad (Anexo L)'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* OVERLAY ANEXO N: DECLARACIÓN JURADA DE CONFLICTO DE INTERÉS */}
-      {mostrarOverlayAnexoN && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-slate-100 flex flex-col max-h-[90vh] animate-fade-in">
-            <div className="text-center mb-6">
-              <span className="text-4xl">⚖️</span>
-              <h2 className="text-2xl font-black text-slate-900 mt-2">Declaración Jurada de Conflicto de Interés</h2>
-              <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mt-1">Anexo N - Declaración Anual Obligatoria</p>
-            </div>
-
-            <div className="flex-1 overflow-y-auto text-sm text-slate-600 bg-slate-50 p-6 rounded-2xl border border-slate-200/60 leading-relaxed mb-6 space-y-4">
-              <p className="font-bold text-slate-800">DECLARACIÓN JURADA DE AUSENCIA DE CONFLICTOS DE INTERÉS ({new Date().getFullYear()})</p>
-              <p>
-                Por la presente, declaro bajo juramento no tener ningún interés financiero, personal, profesional, societario o de filiación que pueda sesgar o comprometer la objetividad de mis evaluaciones técnicas para el Comité Institucional de Ética en Investigación (CIEI) de la Universidad Nacional del Altiplano.
-              </p>
-              <p>
-                Me comprometo a notificar de forma inmediata a la Presidencia del Comité si durante la revisión de algún expediente detectase un posible conflicto de interés (tales como relaciones familiares, asesorías previas, coautoría de publicaciones o competencia académica directa con los investigadores postulantes) para que se proceda con mi inhibición y reasignación del expediente.
-              </p>
-            </div>
-
-            <form onSubmit={firmarAnexoN} className="space-y-4">
-              <div>
-                <label className="block text-xs font-black text-slate-500 uppercase mb-2">Firma Digital (Escriba su Nombre y Apellidos Completos)</label>
-                <input 
-                  required
-                  type="text" 
-                  value={firmaCoI}
-                  onChange={(e) => setFirmaCoI(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none bg-slate-50/50"
-                  placeholder="Ej: Dr. Juan Pérez Gómez"
-                />
-              </div>
-
-              <button 
-                type="submit"
-                disabled={firmando}
-                className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-amber-600/20 active:scale-95"
-              >
-                {firmando ? 'Enviando Firma...' : 'Firmar y Enviar Declaración Jurada (Anexo N)'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -10,9 +10,6 @@ export default function Perfil() {
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
   
-  const [firmaImagenRuta, setFirmaImagenRuta] = useState<string | null>(null);
-  const [subiendoFirma, setSubiendoFirma] = useState(false);
-
   const [formData, setFormData] = useState({
     nombres: '',
     apellidos: '',
@@ -52,7 +49,6 @@ export default function Perfil() {
             escuela_profesional: usuarioLocal.escuela_profesional || '',
             tipo_investigador: usuarioLocal.tipo_investigador || 'estudiante_pregrado'
           }));
-          setFirmaImagenRuta(usuarioLocal.firma_imagen_ruta || null);
         }
 
         // 2. CONEXIÓN REAL: Pedimos los datos a la ruta corregida "/perfil"
@@ -75,7 +71,6 @@ export default function Perfil() {
             escuela_profesional: perfil.escuela_profesional || '',
             tipo_investigador: perfil.tipo_investigador || 'estudiante_pregrado'
           }));
-          setFirmaImagenRuta(perfil.firma_imagen_ruta || null);
 
           // Mantenemos la memoria sincronizada con la base de datos
           localStorage.setItem('usuario', JSON.stringify(perfil));
@@ -95,45 +90,6 @@ export default function Perfil() {
     cargarPerfil();
   }, [navigate]);
 
-  const manejarSubidaFirma = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setSubiendoFirma(true);
-    setMensaje({ tipo: '', texto: '' });
-
-    const formDataFirma = new FormData();
-    formDataFirma.append('firma', file);
-
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.post(`${API_URL}/api/usuarios/perfil/firma`, formDataFirma, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      setFirmaImagenRuta(res.data.firma_imagen_ruta);
-      
-      // Actualizar firma en el localStorage
-      const userStr = localStorage.getItem('usuario');
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        user.firma_imagen_ruta = res.data.firma_imagen_ruta;
-        localStorage.setItem('usuario', JSON.stringify(user));
-      }
-
-      setMensaje({ tipo: 'exito', texto: '¡Imagen de firma cargada exitosamente!' });
-      setTimeout(() => setMensaje({ tipo: '', texto: '' }), 3000);
-    } catch (error: any) {
-      setMensaje({
-        tipo: 'error',
-        texto: error.response?.data?.error || 'Error al subir el archivo de firma.'
-      });
-    } finally {
-      setSubiendoFirma(false);
-    }
-  };
 
   const manejarEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,57 +234,6 @@ export default function Perfil() {
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Escuela Profesional / Programa ✏️</label>
                 <input required type="text" value={formData.escuela_profesional} onChange={(e) => setFormData({...formData, escuela_profesional: e.target.value})} className="w-full px-4 py-3 border border-slate-200 font-bold text-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 transition-shadow" placeholder="Ej: Estadística e Informática" />
-              </div>
-            </div>
-          </div>
-
-          {/* SECCIÓN NUEVA: Firma Digital Manuscrita */}
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-            <h3 className="text-lg font-black text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-              Firma Digital Manuscrita
-            </h3>
-            
-            <p className="text-sm text-slate-500">
-              Suba una imagen de su firma manuscrita sobre fondo blanco (preferiblemente PNG transparente o JPG claro). Esta firma será incrustada automáticamente en los dictámenes y checklists que emita. Si no sube una firma, se generará una estampa digital de texto.
-            </p>
-
-            <div className="flex flex-col md:flex-row items-center gap-8 bg-slate-50 p-6 rounded-2xl border border-slate-200">
-              <div className="w-full md:w-1/3 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-4 bg-white min-h-[150px]">
-                {firmaImagenRuta ? (
-                  <div className="relative group flex flex-col items-center">
-                    <img 
-                      src={`${API_URL}${firmaImagenRuta}`} 
-                      alt="Firma Digital" 
-                      className="max-h-[100px] object-contain border border-slate-200 rounded p-2"
-                    />
-                    <span className="text-[10px] text-emerald-600 font-bold mt-2">Firma Registrada</span>
-                  </div>
-                ) : (
-                  <div className="text-center text-slate-400">
-                    <svg className="w-12 h-12 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                    <span className="text-xs font-bold block">Sin firma registrada</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1 space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Seleccionar Archivo de Firma (Máx 5MB, JPG/PNG)</label>
-                  <input 
-                    type="file" 
-                    accept="image/png, image/jpeg, image/jpg" 
-                    onChange={manejarSubidaFirma} 
-                    disabled={subiendoFirma}
-                    className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer disabled:opacity-50"
-                  />
-                </div>
-                {subiendoFirma && (
-                  <div className="flex items-center gap-2 text-xs font-bold text-blue-600">
-                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
-                    Subiendo archivo de firma...
-                  </div>
-                )}
               </div>
             </div>
           </div>
