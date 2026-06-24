@@ -49,6 +49,13 @@ async function runAllMigrations() {
       ADD COLUMN IF NOT EXISTS acepto_confidencialidad_anexol BOOLEAN DEFAULT false;
     `);
 
+    // 2.5 Documentos - Columnas adicionales
+    console.log('Altering table documentos to add anexo_clave...');
+    await client.query(`
+      ALTER TABLE documentos 
+      ADD COLUMN IF NOT EXISTS anexo_clave VARCHAR(100) DEFAULT 'proyecto';
+    `);
+
     // 3. Alterar enum 'estado_solicitud_enum'
     console.log('Adding "revision_enmienda" to estado_solicitud_enum...');
     try {

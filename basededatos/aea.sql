@@ -330,7 +330,8 @@ CREATE TABLE public.documentos (
     ruta_archivo character varying(255) NOT NULL,
     version integer DEFAULT 1,
     subido_por integer NOT NULL,
-    fecha_subida timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    fecha_subida timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    anexo_clave character varying(100) DEFAULT 'proyecto'::character varying
 );
 
 
