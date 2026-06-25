@@ -392,7 +392,7 @@ export default function ExpedienteDetalle() {
       {/* NAVEGACIÓN SUPERIOR UNIFICADA */}
       <nav className="bg-gradient-to-r from-[#0B132B] to-[#121E3A] text-white shadow-xl z-10 relative border-b border-[#1E293B]">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-          <Link to="/dashboard" className="flex items-center gap-2.5 text-xs font-bold text-slate-350 hover:text-white transition-all hover:translate-x-[-2px] cursor-pointer">
+          <Link to="/dashboard" className="flex items-center gap-2.5 text-xs font-bold text-slate-300 hover:text-white transition-all hover:translate-x-[-2px] cursor-pointer">
             <svg className="w-4 h-4 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             <span className="hidden sm:inline">Volver a Mis Expedientes</span>
             <span className="sm:hidden">Volver</span>

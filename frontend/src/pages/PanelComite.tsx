@@ -723,7 +723,7 @@ export default function PanelComite() {
                             <select
                               value={sol.tipo_revision || 'completa'}
                               onChange={(e) => cambiarTipoRevision(sol.id, e.target.value)}
-                              className="text-xs font-bold bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none focus:border-[#B5944B] cursor-pointer shadow-sm hover:border-slate-350 transition-colors"
+                              className="text-xs font-bold bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none focus:border-[#B5944B] cursor-pointer shadow-sm hover:border-slate-300 transition-colors"
                             >
                               <option value="completa">Completa (Sesión Plena)</option>
                               <option value="expedita">Expedita (Rápida)</option>

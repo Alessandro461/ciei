@@ -88,9 +88,8 @@ export default function Login() {
             Científica
           </h1>
  
-          {/* Tarjeta translúcida de información */}
           <div className="bg-[#121E3A]/80 border border-slate-700/50 backdrop-blur-md p-6 rounded-2xl shadow-2xl">
-            <p className="text-lg text-slate-355 font-medium leading-relaxed">
+            <p className="text-lg !text-slate-200 font-medium leading-relaxed">
               Sistematizamos y agilizamos la evaluación de protocolos de investigación para proteger la vida, los derechos y la dignidad en estudios con humanos y animales.
             </p>
           </div>

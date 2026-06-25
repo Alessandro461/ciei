@@ -118,7 +118,7 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial,
           <h3 className="text-xs font-black text-[#D4AF37] tracking-wider uppercase mb-1 flex items-center gap-1.5">
             📋 {anexoConfig.titulo}
           </h3>
-          <p className="text-[10px] text-slate-350 font-medium font-sans">
+          <p className="text-[10px] text-slate-300 font-medium font-sans">
             Por favor, califique cada uno de los criterios obligatorios definidos en la normativa del comité.
           </p>
         </div>
