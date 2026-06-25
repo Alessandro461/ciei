@@ -46,6 +46,22 @@ export default function EvaluarExpediente() {
 
   const [checklistDataPayload, setChecklistDataPayload] = useState<any>(null);
 
+  // Toast notifications state
+  interface Toast {
+    id: number;
+    mensaje: string;
+    tipo: 'success' | 'error' | 'warning' | 'info';
+  }
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  
+  const showToast = (mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') => {
+    const toastId = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id: toastId, mensaje, tipo }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== toastId));
+    }, 5000);
+  };
+
   const SLOTS_INFORMACION: { [key: string]: string } = {
     proyecto: 'Protocolo de Investigación (Anexo A / Anexo 1)',
     consentimiento: 'Consentimiento Informado / Asentimiento (Anexo C / Anexo 4)',
@@ -115,7 +131,26 @@ export default function EvaluarExpediente() {
   // Procesar y enviar el formulario de evaluación (Recomendación Técnica o Veredicto Consolidado)
   const procesarDictamen = async () => {
     if (!dictamen.estadoElegido) {
-      setMensaje("⚠️ Debe seleccionar un resultado de evaluación (Aprobado, Observado o Rechazado).");
+      showToast("⚠️ Debe seleccionar un resultado de evaluación (Aprobado, Observado o Rechazado).", "warning");
+      return;
+    }
+
+    // Validación de Justificaciones Obligatorias
+    const missingJustification = checklistDataPayload?.respuestas_json?.find((resp: any) => {
+      const requiresJust = resp.valoracion === 'Insuficiente' || resp.valoracion === 'Inadecuado';
+      const hasJust = resp.justificacion_texto && resp.justificacion_texto.trim() !== '';
+      return requiresJust && !hasJust;
+    });
+
+    if (missingJustification) {
+      showToast("⚠️ Debe completar la justificación para todos los criterios evaluados como Insuficiente o Inadecuado.", "warning");
+      setTimeout(() => {
+        const element = document.getElementById(`justificacion-input-${missingJustification.id}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }, 150);
       return;
     }
 
@@ -158,13 +193,20 @@ export default function EvaluarExpediente() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         
-        alert(miRolAsignacion === 'principal' 
-          ? 'Veredicto consolidado registrado y enviado al Presidente exitosamente.'
-          : 'Recomendación técnica individual registrada exitosamente.'
+        showToast(miRolAsignacion === 'principal' 
+          ? '¡Veredicto consolidado registrado y enviado con éxito!'
+          : '¡Recomendación técnica individual registrada con éxito!',
+          'success'
         );
-        navigate('/comite'); // Regresamos a la bandeja principal del revisor
+        
+        // Limpiamos el borrador local
+        localStorage.removeItem(`checklist_draft_${id}`);
+        
+        setTimeout(() => {
+          navigate('/comite'); // Regresamos a la bandeja principal del revisor
+        }, 1500);
       } catch (error) {
-        setMensaje('❌ Error al procesar la recomendación en el servidor.');
+        showToast('❌ Error al procesar la recomendación en el servidor.', 'error');
       } finally {
         setCargando(false);
       }
@@ -208,12 +250,12 @@ export default function EvaluarExpediente() {
         try {
           const text = await error.response.data.text();
           const parsed = JSON.parse(text);
-          alert(parsed.error || 'Hubo un problema al intentar descargar el archivo.');
+          showToast(parsed.error || 'Hubo un problema al intentar descargar el archivo.', "error");
           return;
         } catch (e) {}
       }
       const msg = error.response?.data?.error || 'Hubo un problema al intentar descargar el archivo.';
-      alert(msg);
+      showToast(msg, "error");
     }
   };
 
@@ -243,12 +285,12 @@ export default function EvaluarExpediente() {
         try {
           const text = await error.response.data.text();
           const parsed = JSON.parse(text);
-          alert(parsed.error || 'Error al intentar abrir el visor.');
+          showToast(parsed.error || 'Error al intentar abrir el visor.', "error");
           return;
         } catch (e) {}
       }
       const msg = error.response?.data?.error || 'Error al intentar abrir el visor.';
-      alert(msg);
+      showToast(msg, "error");
     }
   };
 
@@ -439,10 +481,7 @@ export default function EvaluarExpediente() {
                     anexos.push({ clave: 'anexo_5', label: 'Anexo 5: Certificados de capacitación' });
                     anexos.push({ clave: 'anexo_6', label: 'Anexo 6: Ficha técnica de sustancias' });
                   }
-                  
-                  if (!datosProyecto.exonerado_pago) {
-                    anexos.push({ clave: 'voucher', label: 'Voucher de Pago: Derechos de trámite' });
-                  }
+
 
                   return anexos.map((anexo) => {
                     const docsSubidos = documentos.filter(d => (d as any).anexo_clave === anexo.clave);
@@ -719,6 +758,7 @@ export default function EvaluarExpediente() {
                 tipoAnexo={datosProyecto?.tipo_investigacion === 'animales' ? '7' : 'G'}
                 onChange={(data) => setChecklistDataPayload(data)}
                 valorInicial={obtenerChecklistInicial()}
+                solicitudId={id}
               />
               </div>
 
@@ -963,6 +1003,38 @@ export default function EvaluarExpediente() {
           </div>
         </div>
       )}
+      {/* Toast Notification Container */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none">
+        {toasts.map(toast => {
+          let bgClass = 'bg-[#0B132B] text-white border-slate-700 shadow-slate-950/40';
+          let icon = 'ℹ️';
+          if (toast.tipo === 'success') {
+            bgClass = 'bg-emerald-950/95 border-emerald-500/30 text-emerald-100 shadow-emerald-900/20';
+            icon = '✅';
+          } else if (toast.tipo === 'error') {
+            bgClass = 'bg-rose-900/95 border-rose-500/30 text-rose-100 shadow-rose-900/20';
+            icon = '❌';
+          } else if (toast.tipo === 'warning') {
+            bgClass = 'bg-amber-900/95 border-amber-550/30 text-amber-100 shadow-amber-900/20';
+            icon = '⚠️';
+          }
+          return (
+            <div 
+              key={toast.id} 
+              className={`p-4 rounded-2xl border backdrop-blur-md shadow-2xl flex items-start gap-3 pointer-events-auto animate-slide-in transition-all duration-300 ${bgClass}`}
+            >
+              <span className="text-base shrink-0 mt-0.5">{icon}</span>
+              <div className="flex-grow text-xs font-bold leading-relaxed">{toast.mensaje}</div>
+              <button 
+                onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+                className="text-white/60 hover:text-white shrink-0 transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

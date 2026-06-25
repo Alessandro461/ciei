@@ -56,6 +56,92 @@ export default function ExpedienteDetalle() {
   const [archivo, setArchivo] = useState<File | null>(null);
   const [subiendo, setSubiendo] = useState(false);
 
+  const puedeEditar = expediente?.estado_actual === 'borrador' || expediente?.estado_actual === 'observado';
+  const estaAprobado = expediente?.estado_actual === 'aprobado';
+
+  // Toast notifications state
+  interface Toast {
+    id: number;
+    mensaje: string;
+    tipo: 'success' | 'error' | 'warning' | 'info';
+  }
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  
+  const showToast = (mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'info') => {
+    const toastId = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id: toastId, mensaje, tipo }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== toastId));
+    }, 5000);
+  };
+
+  // Keyword dictionary for document slots
+  const KEYWORD_MAP: { [clave: string]: string[] } = {
+    carta_presentacion: ['carta de presentacion', 'carta de presentación', 'presentacion', 'presentación'],
+    proyecto: ['anexo a', 'formato basico', 'formato básico'],
+    proyecto_principal: ['proyecto de investigacion', 'proyecto de investigación', 'protocolo', 'version digital', 'versión digital'],
+    consentimiento: ['anexo c', 'consentimiento', 'asentimiento', 'informado'],
+    cv_actualizado: ['cv', 'curriculum', 'currículo', 'hoja de vida'],
+    aval_institucional: ['anexo d', 'aval', 'declaracion del investigador', 'declaración del investigador'],
+    anexo_e: ['anexo e', 'procedimientos eticos', 'procedimientos éticos'],
+    anexo_f: ['anexo f', 'detalles financieros', 'conflictos de interes', 'conflictos de interés'],
+    manual_procedimientos_biologicos: ['manual del investigador', 'procedimientos biologicos', 'procedimientos biológicos'],
+    poliza_seguro: ['poliza', 'póliza', 'seguro'],
+    certificado_gcp: ['gcp', 'buenas practicas', 'buenas prácticas', 'clinicas', 'clínicas'],
+    anexo_1: ['anexo 1', 'solicitud de evaluacion', 'solicitud de evaluación'],
+    anexo_2: ['anexo 2', 'uso de animales', 'animales de experimentacion', 'animales de experimentación'],
+    anexo_3: ['anexo 3', 'declaracion de compromiso', 'declaración de compromiso'],
+    anexo_5: ['anexo 5', 'capacitacion', 'capacitación'],
+    anexo_6: ['anexo 6', 'sustancias'],
+    voucher: ['voucher', 'comprobante', 'pago', 'derechos de tramite', 'derechos de trámite']
+  };
+
+  // Drag & drop state
+  const [draggedOverSlot, setDraggedOverSlot] = useState<string | null>(null);
+
+  const handleDragOver = (e: React.DragEvent, slotClave: string) => {
+    if (!puedeEditar) return;
+    e.preventDefault();
+    setDraggedOverSlot(slotClave);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!puedeEditar) return;
+    e.preventDefault();
+    setDraggedOverSlot(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, slotClave: string, mappedEnum: string) => {
+    if (!puedeEditar) return;
+    e.preventDefault();
+    setDraggedOverSlot(null);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      await manejarSubidaAnexo(slotClave, mappedEnum, file);
+    }
+  };
+
+  // Highlighting matching slots
+  const obtenerSlotsObservados = () => {
+    if (!expediente || expediente.estado_actual !== 'observado' || !expediente.comentarios_comite) {
+      return new Set<string>();
+    }
+    const comentariosLower = expediente.comentarios_comite.toLowerCase();
+    const slotsObservados = new Set<string>();
+
+    Object.keys(KEYWORD_MAP).forEach(clave => {
+      const keywords = KEYWORD_MAP[clave];
+      const matches = keywords.some(keyword => comentariosLower.includes(keyword));
+      if (matches) {
+        slotsObservados.add(clave);
+      }
+    });
+
+    return slotsObservados;
+  };
+
+  const slotsObservados = obtenerSlotsObservados();
+
   // Definición dinámica de los anexos requeridos según las reglas bioéticas del CIEI
   const obtenerAnexosRequeridos = () => {
     if (!expediente) return [];
@@ -84,10 +170,7 @@ export default function ExpedienteDetalle() {
       anexos.push({ clave: 'anexo_5', label: 'Anexo 5: Certificados de capacitación del personal', obligatorio: true, mappedEnum: 'instrumento' });
       anexos.push({ clave: 'anexo_6', label: 'Anexo 6: Ficha técnica de sustancias u otros', obligatorio: true, mappedEnum: 'instrumento' });
     }
-    
-    if (!expediente.exonerado_pago) {
-      anexos.push({ clave: 'voucher', label: 'Voucher de Pago: Derechos de trámite (2% o 3% del monto financiado)', obligatorio: true, mappedEnum: 'voucher' });
-    }
+
     
     return anexos;
   };
@@ -109,10 +192,10 @@ export default function ExpedienteDetalle() {
           'Content-Type': 'multipart/form-data' 
         }
       });
-      alert("¡Anexo subido con éxito!");
+      showToast("¡Anexo subido con éxito!", "success");
       cargarDetalles();
     } catch (error: any) {
-      alert(error.response?.data?.error || "Error al subir el anexo.");
+      showToast(error.response?.data?.error || "Error al subir el anexo.", "error");
     } finally {
       setSubiendo(false);
     }
@@ -144,8 +227,8 @@ export default function ExpedienteDetalle() {
     } catch (error: any) {
       console.error("Error al cargar el expediente:", error);
       const msg = error.response?.data?.error || "No se pudo obtener la información del expediente.";
-      alert(msg);
-      navigate('/dashboard');
+      showToast(msg, "error");
+      setTimeout(() => navigate('/dashboard'), 2000);
     } finally {
       setCargando(false);
     }
@@ -161,13 +244,13 @@ export default function ExpedienteDetalle() {
     const extValida = extensionesPermitidas.some(ext => nombreArchivo.endsWith(ext));
     
     if (!extValida) {
-      alert("Formato no permitido. Solo se aceptan archivos PDF, DOC o DOCX.");
+      showToast("Formato no permitido. Solo se aceptan archivos PDF, DOC o DOCX.", "warning");
       return false;
     }
 
     const limitePeso = 20 * 1024 * 1024; 
     if (file.size > limitePeso) {
-      alert("El archivo excede el límite permitido de 20MB.");
+      showToast("El archivo excede el límite permitido de 20MB.", "warning");
       return false;
     }
     return true;
@@ -182,7 +265,7 @@ export default function ExpedienteDetalle() {
   // Envío del proyecto principal o subsanación
   const enviarExpedienteComite = async () => {
     if (!puedeEnviar()) {
-      alert("Por favor, cargue todos los anexos obligatorios antes de enviar.");
+      showToast("Por favor, cargue todos los anexos obligatorios antes de enviar.", "warning");
       return;
     }
     setSubiendo(true);
@@ -192,11 +275,11 @@ export default function ExpedienteDetalle() {
       await axios.put(`${API_URL}/api/solicitudes/${id}/enviar`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert("¡Expediente enviado exitosamente al Comité de Ética!");
+      showToast("¡Expediente enviado exitosamente al Comité de Ética!", "success");
       setArchivo(null);
       cargarDetalles(); 
     } catch (error: any) {
-      alert(error.response?.data?.error || "Error al procesar el envío.");
+      showToast(error.response?.data?.error || "Error al procesar el envío.", "error");
     } finally {
       setSubiendo(false);
     }
@@ -205,13 +288,13 @@ export default function ExpedienteDetalle() {
   // NUEVO: Envío de documentos Post-Aprobación (Enmiendas, Reportes, Eventos)
   const enviarDocumentoPostAprobacion = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!archivo || !modalPost) return alert("Por favor seleccione un archivo.");
+    if (!archivo || !modalPost) return showToast("Por favor seleccione un archivo.", "warning");
 
     setSubiendo(true);
     const formData = new FormData();
     formData.append('archivo', archivo);
     formData.append('solicitudId', id || '');
-    formData.append('tipo_documento', modalPost.tipo_documento); // Etiqueta clave para el backend
+    formData.append('tipo_documento', modalPost.tipo_documento); 
 
     try {
       const token = localStorage.getItem('token');
@@ -219,18 +302,18 @@ export default function ExpedienteDetalle() {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
       
-      alert(`¡${modalPost.titulo} enviado exitosamente al comité!`);
+      showToast(`¡${modalPost.titulo} enviado exitosamente al comité!`, "success");
       cerrarModalPost();
-      cargarDetalles(); // Recargar para ver el nuevo documento en el historial
+      cargarDetalles(); 
     } catch (error: any) {
-      alert(error.response?.data?.error || "Error al subir el documento especial.");
+      showToast(error.response?.data?.error || "Error al subir el documento especial.", "error");
     } finally {
       setSubiendo(false);
     }
   };
 
   const abrirModalPost = (tipo: string, titulo: string, descripcion: string, colorTema: string) => {
-    setArchivo(null); // Limpiamos cualquier archivo previo
+    setArchivo(null); 
     setModalPost({ visible: true, tipo_documento: tipo, titulo, descripcion, colorTema });
   };
   const cerrarModalPost = () => {
@@ -253,7 +336,7 @@ export default function ExpedienteDetalle() {
       link.click();
       link.remove();
     } catch (error) {
-      alert("Error al descargar el documento oficial.");
+      showToast("Error al descargar el documento oficial.", "error");
     }
   };
 
@@ -272,7 +355,7 @@ export default function ExpedienteDetalle() {
       link.click();
       link.remove();
     } catch (error) {
-      alert("Error al descargar la carta de observaciones oficial.");
+      showToast("Error al descargar la carta de observaciones oficial.", "error");
     }
   };
 
@@ -291,7 +374,7 @@ export default function ExpedienteDetalle() {
       link.click();
       link.remove();
     } catch (error) {
-      alert("Error al descargar el archivo del historial.");
+      showToast("Error al descargar el archivo del historial.", "error");
     }
   };
 
@@ -302,9 +385,6 @@ export default function ExpedienteDetalle() {
       </div>
     );
   }
-
-  const puedeEditar = expediente?.estado_actual === 'borrador' || expediente?.estado_actual === 'observado';
-  const estaAprobado = expediente?.estado_actual === 'aprobado';
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex flex-col relative">
@@ -531,27 +611,51 @@ export default function ExpedienteDetalle() {
                   const docsSubidos = historial.filter(d => (d as any).anexo_clave === anexo.clave);
                   const tieneDoc = docsSubidos.length > 0;
                   const docReciente = tieneDoc ? docsSubidos[0] : null;
+                  const isObserved = slotsObservados.has(anexo.clave);
+                  const isDragActive = draggedOverSlot === anexo.clave;
 
                   return (
                     <div 
                       key={anexo.clave} 
-                      className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-4 min-h-[200px] hover:shadow-sm ${
-                        tieneDoc ? 'bg-emerald-50/30 border-emerald-200' : 'bg-slate-50/50 border-slate-200'
+                      onDragOver={(e) => handleDragOver(e, anexo.clave)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, anexo.clave, anexo.mappedEnum)}
+                      className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-4 min-h-[200px] hover:shadow-sm relative ${
+                        isDragActive
+                          ? 'border-[#D4AF37] bg-amber-50/40 scale-[1.01] border-dashed ring-2 ring-[#D4AF37]/20 shadow-md shadow-[#D4AF37]/5'
+                          : isObserved
+                            ? 'border-orange-400 bg-orange-50/30 ring-2 ring-orange-400/15 shadow-md shadow-orange-500/5'
+                            : tieneDoc 
+                              ? 'bg-emerald-50/30 border-emerald-200' 
+                              : 'bg-slate-50/50 border-slate-200'
                       }`}
                     >
                       <div className="space-y-3.5">
                         <div className="flex items-start justify-between gap-2.5">
                           <div className="flex gap-2 min-w-0">
-                            <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${tieneDoc ? 'bg-emerald-500' : 'bg-rose-450'}`}></span>
+                            <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                              isObserved 
+                                ? 'bg-orange-500 animate-pulse' 
+                                : tieneDoc 
+                                  ? 'bg-emerald-500' 
+                                  : 'bg-rose-450'
+                            }`}></span>
                             <h4 className="font-bold text-xs text-slate-800 leading-tight" title={anexo.label}>
                               {anexo.label}
                             </h4>
                           </div>
-                          {anexo.obligatorio ? (
-                            <span className="text-[8px] font-black uppercase text-rose-600 bg-rose-100/80 px-2 py-0.5 rounded shrink-0 tracking-wider">Obligatorio</span>
-                          ) : (
-                            <span className="text-[8px] font-black uppercase text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded shrink-0 tracking-wider">Opcional</span>
-                          )}
+                          <div className="flex gap-1.5 shrink-0">
+                            {isObserved && (
+                              <span className="text-[8px] font-black uppercase text-orange-700 bg-orange-100 px-2 py-0.5 rounded tracking-wider border border-orange-200 animate-pulse">
+                                ⚠️ Corregir
+                              </span>
+                            )}
+                            {anexo.obligatorio ? (
+                              <span className="text-[8px] font-black uppercase text-rose-600 bg-rose-100/80 px-2 py-0.5 rounded shrink-0 tracking-wider">Obligatorio</span>
+                            ) : (
+                              <span className="text-[8px] font-black uppercase text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded shrink-0 tracking-wider">Opcional</span>
+                            )}
+                          </div>
                         </div>
                         
                         {tieneDoc && docReciente ? (
@@ -687,6 +791,39 @@ export default function ExpedienteDetalle() {
           </div>
         </div>
       )}
+
+      {/* Toast Notification Container */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none">
+        {toasts.map(toast => {
+          let bgClass = 'bg-[#0B132B] text-white border-slate-700 shadow-slate-950/40';
+          let icon = 'ℹ️';
+          if (toast.tipo === 'success') {
+            bgClass = 'bg-emerald-950/95 border-emerald-500/30 text-emerald-100 shadow-emerald-900/20';
+            icon = '✅';
+          } else if (toast.tipo === 'error') {
+            bgClass = 'bg-rose-900/95 border-rose-500/30 text-rose-100 shadow-rose-900/20';
+            icon = '❌';
+          } else if (toast.tipo === 'warning') {
+            bgClass = 'bg-amber-900/95 border-amber-550/30 text-amber-100 shadow-amber-900/20';
+            icon = '⚠️';
+          }
+          return (
+            <div 
+              key={toast.id} 
+              className={`p-4 rounded-2xl border backdrop-blur-md shadow-2xl flex items-start gap-3 pointer-events-auto animate-slide-in transition-all duration-300 ${bgClass}`}
+            >
+              <span className="text-base shrink-0 mt-0.5">{icon}</span>
+              <div className="flex-grow text-xs font-bold leading-relaxed">{toast.mensaje}</div>
+              <button 
+                onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+                className="text-white/60 hover:text-white shrink-0 transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+          );
+        })}
+      </div>
 
     </div>
   );

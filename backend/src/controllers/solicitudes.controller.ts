@@ -176,8 +176,8 @@ export const crearSolicitudBorrador = async (req: AuthRequest, res: Response): P
         const numero_aleatorio = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
         const numero_expediente = `CIEI-${anio}-${numero_aleatorio}`;
 
-        // Cálculo automático de la exoneración de pago según origen de fondos
-        const esExonerado = (origen_fondos === 'autofinanciado' || origen_fondos === 'fedu');
+        // Cálculo automático de la exoneración de pago (forzado siempre a true ya que se removieron los pagos)
+        const esExonerado = true;
 
         // Insertamos absolutamente todo en la base de datos
         const result = await pool.query(
@@ -474,38 +474,49 @@ export const asignarRevisor = async (req: AuthRequest, res: Response): Promise<v
             */
         }
 
-        // Si todas las validaciones pasaron, actualizamos y registramos las asignaciones
-        // 1. Guardar el revisor principal en solicitudes.revisor_id para compatibilidad
-        await pool.query(
-            `UPDATE solicitudes 
-             SET revisor_id = $1, estado_actual = 'en_revision', updated_at = NOW()
-             WHERE id = $2`,
-            [principal_id, solicitudId]
-        );
+        // Si todas las validaciones pasaron, actualizamos y registramos las asignaciones con una transacción
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
 
-        // 2. Limpiar asignaciones anteriores no dictaminadas
-        await pool.query(
-            "DELETE FROM asignaciones_revision WHERE solicitud_id = $1 AND estado_revision != 'dictaminado'",
-            [solicitudId]
-        );
-
-        // 3. Insertar la asignación del principal
-        await pool.query(
-            `INSERT INTO asignaciones_revision (solicitud_id, revisor_id, rol_asignacion, estado_revision, fecha_asignacion, fecha_limite)
-             VALUES ($1, $2, 'principal', 'pendiente', NOW(), NOW() + INTERVAL '30 days')`,
-            [solicitudId, principal_id]
-        );
-
-        // 4. Insertar asignaciones de los secundarios
-        for (const secId of secundarios_ids) {
-            await pool.query(
-                `INSERT INTO asignaciones_revision (solicitud_id, revisor_id, rol_asignacion, estado_revision, fecha_asignacion, fecha_limite)
-                 VALUES ($1, $2, 'secundario', 'pendiente', NOW(), NOW() + INTERVAL '30 days')`,
-                [solicitudId, secId]
+            // 1. Guardar el revisor principal en solicitudes.revisor_id para compatibilidad
+            await client.query(
+                `UPDATE solicitudes 
+                 SET revisor_id = $1, estado_actual = 'en_revision', updated_at = NOW()
+                 WHERE id = $2`,
+                [principal_id, solicitudId]
             );
-        }
 
-        res.json({ mensaje: 'Revisores asignados con éxito. El expediente se encuentra en estado de revisión.' });
+            // 2. Limpiar asignaciones anteriores no dictaminadas
+            await client.query(
+                "DELETE FROM asignaciones_revision WHERE solicitud_id = $1 AND estado_revision != 'dictaminado'",
+                [solicitudId]
+            );
+
+            // 3. Insertar la asignación del principal
+            await client.query(
+                `INSERT INTO asignaciones_revision (solicitud_id, revisor_id, rol_asignacion, estado_revision, fecha_asignacion, fecha_limite)
+                 VALUES ($1, $2, 'principal', 'pendiente', NOW(), NOW() + INTERVAL '30 days')`,
+                [solicitudId, principal_id]
+            );
+
+            // 4. Insertar asignaciones de los secundarios
+            for (const secId of secundarios_ids) {
+                await client.query(
+                    `INSERT INTO asignaciones_revision (solicitud_id, revisor_id, rol_asignacion, estado_revision, fecha_asignacion, fecha_limite)
+                     VALUES ($1, $2, 'secundario', 'pendiente', NOW(), NOW() + INTERVAL '30 days')`,
+                    [solicitudId, secId]
+                );
+            }
+
+            await client.query('COMMIT');
+            res.json({ mensaje: 'Revisores asignados con éxito. El expediente se encuentra en estado de revisión.' });
+        } catch (transError) {
+            await client.query('ROLLBACK');
+            throw transError;
+        } finally {
+            client.release();
+        }
     } catch (error) {
         console.error('Error al asignar revisores:', error);
         res.status(500).json({ error: 'Falla interna del servidor al asignar los revisores.' });
@@ -541,45 +552,58 @@ export const recomendarDictamen = async (req: AuthRequest, res: Response): Promi
         const asignacionId = asigRes.rows[0].id;
         const rolAsignacion = asigRes.rows[0].rol_asignacion;
 
-        // 2. Insertar en la tabla dictamenes
-        const dictamenResult = await pool.query(
-            `INSERT INTO dictamenes (asignacion_id, resultado, comentarios_investigador, comentarios_internos, fecha_emision)
-             VALUES ($1, $2, $3, $4, NOW()) RETURNING id`,
-            [asignacionId, resultado, comentarios || '', '']
-        );
-        const dictamenId = dictamenResult.rows[0].id;
+        const client = await pool.connect();
+        let dictamenId: number;
+        try {
+            await client.query('BEGIN');
 
-        // 3. Insertar Checklist Estructurado si viene en el cuerpo de la petición
-        if (checklist) {
-            await pool.query(
-                `INSERT INTO evaluaciones_checklist (
-                    dictamen_id, tipo_anexo, respuestas_json
-                 ) VALUES ($1, $2, $3)`,
-                [
-                    dictamenId,
-                    checklist.tipo_anexo || 'G',
-                    JSON.stringify(checklist.respuestas_json || checklist.respuestas || checklist)
-                ]
+            // 2. Insertar en la tabla dictamenes
+            const dictamenResult = await client.query(
+                `INSERT INTO dictamenes (asignacion_id, resultado, comentarios_investigador, comentarios_internos, fecha_emision)
+                 VALUES ($1, $2, $3, $4, NOW()) RETURNING id`,
+                [asignacionId, resultado, comentarios || '', '']
             );
+            dictamenId = dictamenResult.rows[0].id;
+
+            // 3. Insertar Checklist Estructurado si viene en el cuerpo de la petición
+            if (checklist) {
+                await client.query(
+                    `INSERT INTO evaluaciones_checklist (
+                        dictamen_id, tipo_anexo, respuestas_json
+                     ) VALUES ($1, $2, $3)`,
+                    [
+                        dictamenId,
+                        checklist.tipo_anexo || 'G',
+                        JSON.stringify(checklist.respuestas_json || checklist.respuestas || checklist)
+                    ]
+                );
+            }
+
+            // 4. Actualizar la tabla asignaciones_revision a dictaminado
+            await client.query(
+                `UPDATE asignaciones_revision 
+                 SET estado_revision = 'dictaminado' 
+                 WHERE id = $1`,
+                [asignacionId]
+            );
+
+            // 5. Actualizar fecha de modificación de la solicitud
+            await client.query(
+                `UPDATE solicitudes 
+                 SET updated_at = NOW() 
+                 WHERE id = $1`,
+                [solicitudId]
+            );
+
+            await client.query('COMMIT');
+        } catch (transError) {
+            await client.query('ROLLBACK');
+            throw transError;
+        } finally {
+            client.release();
         }
 
-        // 4. Actualizar la tabla asignaciones_revision a dictaminado
-        await pool.query(
-            `UPDATE asignaciones_revision 
-             SET estado_revision = 'dictaminado' 
-             WHERE id = $1`,
-            [asignacionId]
-        );
-
-        // 5. Actualizar fecha de modificación de la solicitud
-        await pool.query(
-            `UPDATE solicitudes 
-             SET updated_at = NOW() 
-             WHERE id = $1`,
-            [solicitudId]
-        );
-
-        // 6. Generar el PDF Individual del Checklist
+        // 6. Generar el PDF Individual del Checklist (Fuera de la transacción principal)
         try {
             const pdfChecklistRuta = await generarChecklistPDF(solicitudId, dictamenId, revisorId, checklist);
             await pool.query('UPDATE dictamenes SET pdf_checklist_ruta = $1 WHERE id = $2', [pdfChecklistRuta, dictamenId]);
@@ -961,7 +985,7 @@ export const descargarCartaObservaciones = async (req: AuthRequest, res: Respons
             renderSection('Otras observaciones', sections.otros);
         } else {
             const rawComments = (expediente.comentarios_comite || 'No se detallaron observaciones específicas.').split('\n');
-            rawComments.forEach(line => {
+            rawComments.forEach((line: string) => {
                 const trimmed = line.trim();
                 if (trimmed) {
                     doc.fontSize(12).font('Times-Roman').text(`• ${trimmed}`, {
@@ -1154,18 +1178,6 @@ export const enviarSolicitud = async (req: AuthRequest, res: Response): Promise<
     } catch (error) {
         console.error('[SOLICITUDES] Error al enviar:', error);
         res.status(500).json({ error: 'Error al enviar el expediente al comité.' });
-    }
-};
-export const cambiarEstadoAPendientePago = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        await pool.query(
-            "UPDATE solicitudes SET estado_actual = 'pendiente_pago', updated_at = CURRENT_TIMESTAMP WHERE id = $1", 
-            [id]
-        );
-        res.json({ mensaje: "Estado actualizado a pendiente de pago" });
-    } catch (error) {
-        res.status(500).json({ error: "Error interno" });
     }
 };
 

@@ -84,7 +84,7 @@ export default function DashboardRevisor() {
       
       // Filtramos estados válidos para el revisor (Ocultamos borradores, peajes o enviados sin asignar)
       const validos = respuesta.data.solicitudes.filter(
-        (s: ExpedienteAsignado) => s.estado_actual !== 'borrador' && s.estado_actual !== 'pendiente_pago' && s.estado_actual !== 'enviado'
+        (s: ExpedienteAsignado) => s.estado_actual !== 'borrador' && s.estado_actual !== 'enviado'
       );
       setExpedientes(validos);
     } catch (error) {

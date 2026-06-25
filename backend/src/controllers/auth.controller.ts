@@ -7,6 +7,13 @@ export const registrarUsuario = async (req: Request, res: Response): Promise<voi
     try {
         const { dni, nombres, apellidos, correo_institucional, password, rol, facultad } = req.body;
 
+        // Validación de complejidad de contraseña (mínimo 8 caracteres, al menos 1 letra y 1 número)
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(password || '')) {
+            res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres y contener letras y números.' });
+            return;
+        }
+
         // 1. Verificar si el usuario o DNI ya existen en la base de datos
         const userExists = await pool.query(
             'SELECT * FROM usuarios WHERE correo_institucional = $1 OR dni = $2', 

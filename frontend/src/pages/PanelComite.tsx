@@ -105,21 +105,7 @@ export default function PanelComite() {
     }
   };
 
-  // NUEVA FUNCIÓN: Exigir Pago al Investigador
-  const exigirPago = async (id: number) => {
-    if (window.confirm('¿Solicitar pago de derechos? El investigador no podrá avanzar hasta que suba su voucher.')) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.put(`${API_URL}/api/solicitudes/${id}/exigir-pago`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        alert('¡Proyecto retenido! Se ha habilitado la subida de voucher para el investigador.');
-        cargarBandeja();
-      } catch (error) {
-        alert('Error al exigir el pago. Verifique las rutas del backend.');
-      }
-    }
-  };
+
 
 
 
@@ -674,7 +660,7 @@ export default function PanelComite() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_5px_20px_rgb(0,0,0,0.03)] border border-slate-200/80 overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-[0_5px_20px_rgb(0,0,0,0.03)] border border-slate-200/80 overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-100">
                 <thead className="bg-slate-50/50">
                   <tr>
@@ -780,23 +766,11 @@ export default function PanelComite() {
                         {/* BOTONES ACCIÓN */}
                         <td className="px-6 py-5 text-right text-xs space-x-1.5 whitespace-nowrap">
                           
-                          {/* Botones Peaje y Asignación (Solo Presidente/Admin) */}
+                          {/* Botón Asignación (Solo Presidente/Admin) */}
                           {(usuario?.rol === 'presidente' || usuario?.rol === 'admin') && sol.estado_actual === 'enviado' && (
-                            <>
-                              <button onClick={() => exigirPago(sol.id)} className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer border border-amber-600 shadow-amber-500/10" title="Detener y cobrar derechos">
-                                Exigir Pago
-                              </button>
-                              <button onClick={() => abrirModalAsignacion(sol.id)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer border border-blue-700 shadow-blue-500/10">
-                                Asignar Revisor
-                              </button>
-                            </>
-                          )}
-
-                          {/* Aviso de Espera de Pago */}
-                          {(usuario?.rol === 'presidente' || usuario?.rol === 'admin') && sol.estado_actual === 'pendiente_pago' && (
-                            <span className="text-[10px] font-bold text-yellow-700 italic bg-yellow-50/50 border border-yellow-200 px-3 py-2 rounded-xl">
-                              ⏳ Esperando Voucher...
-                            </span>
+                            <button onClick={() => abrirModalAsignacion(sol.id)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer border border-blue-700 shadow-blue-500/10">
+                              Asignar Revisor
+                            </button>
                           )}
 
                           {/* Demás botones del sistema */}
@@ -811,7 +785,7 @@ export default function PanelComite() {
                           {(usuario?.rol === 'presidente' || usuario?.rol === 'admin') && (sol.estado_actual === 'en_revision' || sol.estado_actual === 'subsanado' || sol.estado_actual === 'revision_enmienda') && (
                             <button onClick={() => abrirModalDictamen(sol.id)} className="bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all cursor-pointer border border-slate-950">Dictaminar</button>
                           )}
-                          {(usuario?.rol === 'revisor' || usuario?.rol === 'admin') && sol.estado_actual !== 'aprobado' && sol.estado_actual !== 'pendiente_pago' && (
+                          {(usuario?.rol === 'revisor' || usuario?.rol === 'admin') && sol.estado_actual !== 'aprobado' && (
                             <button onClick={() => navigate(`/comite/evaluar/${sol.id}`)} className="bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all cursor-pointer border border-slate-950">Evaluar</button>
                           )}
                           {sol.estado_actual === 'aprobado' && (
@@ -856,7 +830,7 @@ export default function PanelComite() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_5px_20px_rgb(0,0,0,0.03)] border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-[0_5px_20px_rgb(0,0,0,0.03)] border border-slate-200 overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-50/50">
                   <tr>
@@ -983,7 +957,7 @@ export default function PanelComite() {
                 </button>
               </div>
               
-              <div className="overflow-hidden border border-slate-200 rounded-2xl">
+              <div className="overflow-x-auto border border-slate-200 rounded-2xl">
                 <table className="min-w-full divide-y divide-slate-200">
                   <thead className="bg-slate-50">
                     <tr>

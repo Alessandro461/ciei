@@ -128,10 +128,10 @@ export default function NuevoExpedienteModal({ isOpen, onClose, onSuccess }: Mod
                     onChange={(e) => setFormData({...formData, origen_fondos: e.target.value})} 
                     className="w-full px-4 py-3 border border-slate-200 font-bold text-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 cursor-pointer"
                   >
-                    <option value="autofinanciado">Autofinanciado (Exonerado)</option>
-                    <option value="fedu">FEDU - UNA Puno (Exonerado)</option>
-                    <option value="externo">Financiamiento Externo (Requiere Pago)</option>
-                    <option value="otros">Otros Convenios (Requiere Pago)</option>
+                    <option value="autofinanciado">Autofinanciado</option>
+                    <option value="fedu">FEDU - UNA Puno</option>
+                    <option value="externo">Financiamiento Externo</option>
+                    <option value="otros">Otros Convenios</option>
                   </select>
                 </div>
                 <div>

@@ -15,6 +15,27 @@ export const subirDocumento = async (req: AuthRequest, res: Response): Promise<v
             return;
         }
 
+        // Validar firma del archivo (Magic Numbers) para evitar extensiones falsas
+        const buffer = fs.readFileSync(archivo.path);
+        const header = buffer.toString('hex', 0, 4); // Leer primeros 4 bytes
+        
+        let validFirma = false;
+        const ext = path.extname(archivo.originalname).toLowerCase();
+        
+        if (ext === '.pdf') {
+            // Un PDF debe empezar con 25504446 (%PDF)
+            validFirma = header === '25504446';
+        } else if (ext === '.doc' || ext === '.docx') {
+            // DOC/DOCX suelen empezar con 504b0304 (ZIP) o d0cf11e0 (OLE)
+            validFirma = header === '504b0304' || header === 'd0cf11e0';
+        }
+
+        if (!validFirma) {
+            fs.unlinkSync(archivo.path);
+            res.status(400).json({ error: 'Firma de archivo inválida. El contenido del archivo no coincide con su extensión permitida.' });
+            return;
+        }
+
         // Interceptar si es un documento especial de Seguimiento Post-Aprobación
         if (tipo_documento && ['enmienda', 'reporte_avance', 'evento_adverso'].includes(tipo_documento)) {
             const titulo = tipo_documento === 'enmienda' ? 'Solicitud de Enmienda' :
@@ -140,6 +161,15 @@ export const subirDocumento = async (req: AuthRequest, res: Response): Promise<v
 
     } catch (error) {
         console.error('Error al subir documento:', error);
+        // Si falló la inserción en base de datos, eliminamos el archivo físico para que no sea huérfano
+        const archivo = (req as any).file;
+        if (archivo && fs.existsSync(archivo.path)) {
+            try {
+                fs.unlinkSync(archivo.path);
+            } catch (err) {
+                console.error('Error al eliminar archivo huérfano:', err);
+            }
+        }
         res.status(500).json({ error: 'Falla interna al registrar el documento en la base de datos.' });
     }
 };

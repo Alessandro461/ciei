@@ -17,13 +17,29 @@ interface ChecklistEvaluacionProps {
   tipoAnexo: 'G' | '7';
   onChange: (data: { tipo_anexo: 'G' | '7'; respuestas_json: RespuestaItem[] }) => void;
   valorInicial?: any[];
+  solicitudId?: string;
 }
 
-export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial }: ChecklistEvaluacionProps) {
+export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial, solicitudId }: ChecklistEvaluacionProps) {
   const anexoConfig = getAnexoByTipo(tipoAnexo);
 
   // Mapeamos las preguntas de la configuración a un formato plano para react-hook-form
   const inicializarRespuestas = (): RespuestaItem[] => {
+    // Intentar cargar borrador desde localStorage primero
+    if (solicitudId) {
+      const borrador = localStorage.getItem(`checklist_draft_${solicitudId}`);
+      if (borrador) {
+        try {
+          const parsed = JSON.parse(borrador);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        } catch (e) {
+          console.warn("Error al cargar borrador de checklist", e);
+        }
+      }
+    }
+
     // Si ya existe un valor inicial (historial o borrador guardado), lo cargamos
     const inicialesMap = new Map<string, any>();
     if (Array.isArray(valorInicial)) {
@@ -65,7 +81,11 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
       tipo_anexo: tipoAnexo,
       respuestas_json: respuestasWatch || []
     });
-  }, [respuestasWatch, tipoAnexo]);
+
+    if (solicitudId && respuestasWatch) {
+      localStorage.setItem(`checklist_draft_${solicitudId}`, JSON.stringify(respuestasWatch));
+    }
+  }, [respuestasWatch, tipoAnexo, solicitudId]);
 
   // Si cambia el tipo de anexo o el valor inicial, reiniciamos el formulario
   useEffect(() => {
@@ -80,16 +100,52 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
     return flatPreguntas.findIndex((field: any) => field.id === id);
   };
 
+  // Cáculo de progreso en vivo
+  const observados = respuestasWatch?.filter(
+    (r: any) => r.valoracion === 'Insuficiente' || r.valoracion === 'Inadecuado'
+  ) || [];
+  const totalObservaciones = observados.length;
+  const justificacionesCompletas = observados.filter(
+    (r: any) => r.justificacion_texto && r.justificacion_texto.trim() !== ''
+  ).length;
+  const justificacionesPendientes = totalObservaciones - justificacionesCompletas;
+
   return (
     <div className="space-y-6">
       {/* Cabecera del Checklist */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50/50 p-5 rounded-2xl border border-blue-100/85 shadow-sm">
-        <h3 className="text-xs font-black text-slate-800 tracking-wider uppercase mb-1 flex items-center gap-1.5">
-          📋 {anexoConfig.titulo}
-        </h3>
-        <p className="text-[10px] text-slate-500 font-medium">
-          Por favor, califique cada uno de los criterios obligatorios definidos en la normativa del comité.
-        </p>
+      <div className="bg-[#0B132B] text-white p-5 rounded-2xl border border-slate-700/60 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h3 className="text-xs font-black text-[#D4AF37] tracking-wider uppercase mb-1 flex items-center gap-1.5">
+            📋 {anexoConfig.titulo}
+          </h3>
+          <p className="text-[10px] text-slate-350 font-medium font-sans">
+            Por favor, califique cada uno de los criterios obligatorios definidos en la normativa del comité.
+          </p>
+        </div>
+        
+        {/* Progress pill indicator */}
+        <div className="flex gap-2 shrink-0">
+          {totalObservaciones > 0 ? (
+            <>
+              <span className="text-[9px] font-black uppercase bg-rose-950/80 border border-rose-500/20 text-rose-200 px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1">
+                ⚠️ {totalObservaciones} Obs.
+              </span>
+              <span className={`text-[9px] font-black uppercase px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1 border transition-all ${
+                justificacionesPendientes > 0
+                  ? 'bg-amber-950/80 border-amber-550/20 text-amber-200 animate-pulse'
+                  : 'bg-emerald-950/80 border-emerald-500/20 text-emerald-200'
+              }`}>
+                {justificacionesPendientes > 0 
+                  ? `✏️ Faltan ${justificacionesPendientes} justif.`
+                  : '✅ Todo justificado'}
+              </span>
+            </>
+          ) : (
+            <span className="text-[9px] font-black uppercase bg-emerald-950/85 border border-emerald-500/20 text-emerald-200 px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1">
+              ✨ Sin Observaciones
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -178,6 +234,7 @@ export default function ChecklistEvaluacion({ tipoAnexo, onChange, valorInicial 
                               ⚠️ Justificación requerida
                             </span>
                             <textarea
+                              id={`justificacion-input-${pregunta.id}`}
                               rows={2.5}
                               placeholder="Escriba aquí la justificación detallada y observaciones para esta valoración (Obligatorio)..."
                               required

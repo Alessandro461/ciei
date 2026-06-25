@@ -7,6 +7,7 @@ interface Revisor {
   id: number;
   nombres: string;
   apellidos: string;
+  carga_activa?: number;
 }
 
 interface ModalProps {
@@ -108,7 +109,7 @@ export default function AsignarRevisorModal({ isOpen, onClose, onSuccess, solici
               <option value="" disabled>-- Seleccione el Revisor Principal --</option>
               {revisores.map(rev => (
                 <option key={rev.id} value={rev.id}>
-                  {rev.nombres} {rev.apellidos}
+                  {rev.nombres} {rev.apellidos} ({rev.carga_activa !== undefined ? `${rev.carga_activa} asignaciones` : '0 asignaciones'})
                 </option>
               ))}
             </select>
@@ -128,19 +129,28 @@ export default function AsignarRevisorModal({ isOpen, onClose, onSuccess, solici
                   .map(rev => (
                     <label 
                       key={rev.id} 
-                      className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-all hover:bg-white ${
+                      className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer transition-all hover:bg-white ${
                         secundariosIds.includes(rev.id) 
                           ? 'border-blue-200 bg-blue-50/20 text-blue-900 font-bold' 
-                          : 'border-slate-100 text-slate-600 font-medium'
+                          : 'border-slate-100 text-slate-650 font-medium'
                       }`}
                     >
-                      <input 
-                        type="checkbox"
-                        checked={secundariosIds.includes(rev.id)}
-                        onChange={() => handleToggleSecundario(rev.id)}
-                        className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
-                      />
-                      <span className="text-sm">{rev.nombres} {rev.apellidos}</span>
+                      <div className="flex items-center gap-3">
+                        <input 
+                          type="checkbox"
+                          checked={secundariosIds.includes(rev.id)}
+                          onChange={() => handleToggleSecundario(rev.id)}
+                          className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
+                        />
+                        <span className="text-sm">{rev.nombres} {rev.apellidos}</span>
+                      </div>
+                      <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full ${
+                        (rev.carga_activa || 0) >= 3 
+                          ? 'bg-amber-100 text-amber-800 border border-amber-200' 
+                          : 'bg-slate-100 text-slate-500'
+                      }`}>
+                        {rev.carga_activa || 0} act.
+                      </span>
                     </label>
                   ))
               )}

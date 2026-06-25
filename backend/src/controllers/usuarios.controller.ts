@@ -40,6 +40,13 @@ export const crearUsuarioAdmin = async (req: AuthRequest, res: Response): Promis
 
         const { dni, nombres, apellidos, correo_institucional, password, rol } = req.body;
 
+        // Validación de complejidad de contraseña (mínimo 8 caracteres, al menos 1 letra y 1 número)
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(password || '')) {
+            res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres y contener letras y números.' });
+            return;
+        }
+
         // Encriptamos la contraseña ingresada
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
