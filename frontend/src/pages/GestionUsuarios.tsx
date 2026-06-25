@@ -66,13 +66,13 @@ export default function GestionUsuarios() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans flex flex-col">
+    <div className="min-h-screen bg-slate-100 font-sans flex flex-col overflow-x-hidden relative">
       <nav className="bg-slate-900 text-white shadow-md p-4 border-b-4 border-emerald-500">
-        <div className="max-w-7xl mx-auto flex items-center gap-4">
-          <button onClick={() => navigate('/comite')} className="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-sm font-bold">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center gap-3">
+          <button onClick={() => navigate('/comite')} className="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold shrink-0 self-start sm:self-auto">
             ← Volver al Panel
           </button>
-          <span className="font-bold text-lg">Directorio de Usuarios y Roles</span>
+          <span className="font-bold text-base sm:text-lg">Directorio de Usuarios y Roles</span>
         </div>
       </nav>
 
@@ -80,11 +80,11 @@ export default function GestionUsuarios() {
         
         {/* TABLA DE USUARIOS */}
         <div className="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-            <h2 className="text-xl font-extrabold text-slate-800">Personal Registrado</h2>
+          <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50">
+            <h2 className="text-lg sm:text-xl font-extrabold text-slate-800">Personal Registrado</h2>
             <button 
               onClick={() => setMostrarForm(!mostrarForm)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-colors"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-xs sm:text-sm shadow-md transition-colors self-start sm:self-auto"
             >
               {mostrarForm ? 'Cerrar Formulario' : '+ Nuevo Usuario'}
             </button>

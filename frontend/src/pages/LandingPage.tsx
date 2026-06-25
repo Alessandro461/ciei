@@ -149,13 +149,13 @@ export default function LandingPage() {
   const avisosRecientes = avisos.slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans flex flex-col scroll-smooth selection:bg-red-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col scroll-smooth selection:bg-red-500 selection:text-white overflow-x-hidden">
       
       {/* NAVEGACIÓN */}
       <nav className="fixed w-full top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-20 items-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex justify-between h-16 sm:h-20 items-center">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => window.scrollTo(0,0)}>
-            <img src="/logo.png" alt="Logo CIEI" className="h-12 hover:scale-105 transition-transform" />
+            <img src="/logo.png" alt="Logo CIEI" className="h-10 sm:h-12 hover:scale-105 transition-transform" />
             <div className="hidden sm:flex flex-col border-l-2 border-slate-300 pl-3">
               <span className="font-extrabold tracking-tight text-slate-900 text-xl leading-tight">CIEI</span>
               <span className="text-[10px] font-extrabold text-red-600 uppercase tracking-widest">UNA Puno</span>
@@ -196,7 +196,7 @@ export default function LandingPage() {
 
       {/* MENÚ MÓVIL DESPLEGABLE */}
       {menuMovilAbierto && (
-        <div className="md:hidden fixed top-20 inset-x-0 bg-white border-b border-slate-200 z-30 shadow-lg animate-fade-in p-5 flex flex-col gap-4">
+        <div className="md:hidden fixed top-16 sm:top-20 inset-x-0 bg-white border-b border-slate-200 z-30 shadow-lg animate-fade-in p-5 flex flex-col gap-4">
           <a href="#procedimientos" onClick={() => setMenuMovilAbierto(false)} className="text-slate-700 font-bold hover:text-red-650 transition-colors py-2 border-b border-slate-100">Procedimientos</a>
           <a href="#proyecto" onClick={() => setMenuMovilAbierto(false)} className="text-slate-700 font-bold hover:text-red-650 transition-colors py-2 border-b border-slate-100">Proyecto</a>
           <a href="#formatos" onClick={() => setMenuMovilAbierto(false)} className="text-slate-700 font-bold hover:text-red-650 transition-colors py-2 border-b border-slate-100">Formatos Oficiales</a>
@@ -206,31 +206,33 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* SECCIÓN HERO */}
-        <section ref={vantaRef} className="relative pt-32 pb-20 lg:pt-44 lg:pb-32 min-h-screen flex items-center border-b-8 border-red-600">
-          <div className="max-w-7xl mx-auto px-4 relative z-10 w-full grid lg:grid-cols-12 gap-12 items-center">
+        <section ref={vantaRef} className="relative pt-24 pb-12 sm:pt-32 sm:pb-20 lg:pt-44 lg:pb-32 min-h-screen flex items-center border-b-8 border-red-600 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 w-full grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-yellow-400 text-sm font-bold uppercase tracking-widest mb-8 backdrop-blur-md shadow-xl">
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-ping absolute"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 relative"></span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 border border-white/20 text-yellow-400 text-xs sm:text-sm font-bold uppercase tracking-widest mb-6 sm:mb-8 backdrop-blur-md shadow-xl">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-yellow-400"></span>
+                </span>
                 Plataforma Activa
               </div>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-8 tracking-tight leading-[1.05] drop-shadow-2xl">
-                Comité de Ética en <br />
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-6 sm:mb-8 tracking-tight leading-[1.1] drop-shadow-2xl">
+                Comité de Ética en <br className="hidden sm:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-white">
                   Investigación Científica
                 </span>
               </h1>
-              <p className="text-lg md:text-2xl text-slate-300 mb-10 font-medium leading-relaxed max-w-2xl backdrop-blur-sm bg-slate-900/40 p-5 rounded-2xl border border-white/10 shadow-xl">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-300 mb-8 sm:mb-10 font-medium leading-relaxed max-w-2xl backdrop-blur-sm bg-slate-900/40 p-4 sm:p-5 rounded-2xl border border-white/10 shadow-xl">
                 Sistematizamos y agilizamos la evaluación de protocolos de investigación para proteger la vida, los derechos y la dignidad en estudios con humanos y animales.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/login" className="bg-red-600 hover:bg-red-700 text-white shadow-[0_0_25px_rgba(220,38,38,0.6)] px-8 py-4 rounded-xl font-bold transition-all hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <Link to="/login" className="bg-red-600 hover:bg-red-700 text-white shadow-[0_0_25px_rgba(220,38,38,0.6)] px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-bold transition-all hover:-translate-y-1 flex items-center justify-center gap-2 text-base sm:text-lg">
                   Iniciar Sesión
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </Link>
-                <Link to="/registro" className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-xl font-bold transition-all backdrop-blur-md flex items-center justify-center text-lg">
+                <Link to="/registro" className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-bold transition-all backdrop-blur-md flex items-center justify-center text-base sm:text-lg">
                   Registrarse
                 </Link>
               </div>
@@ -270,18 +272,18 @@ export default function LandingPage() {
         </section>
 
         {/* SECCIÓN PROCEDIMIENTOS Y CRONOGRAMA */}
-        <section id="procedimientos" className="py-24 bg-white border-b border-slate-200">
+        <section id="procedimientos" className="py-12 sm:py-16 lg:py-24 bg-white border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <span className="text-red-600 font-black tracking-widest uppercase text-sm mb-2 block">Planificación Académica</span>
-              <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">Procedimientos y Cronograma de Evaluación 2025</h2>
-              <p className="text-slate-500 max-w-2xl mx-auto text-lg">Consulte los plazos máximos para el envío de proyectos y las reuniones de evaluación programadas por el Comité.</p>
+              <span className="text-red-600 font-black tracking-widest uppercase text-xs sm:text-sm mb-2 block">Planificación Académica</span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4">Procedimientos y Cronograma de Evaluación 2025</h2>
+              <p className="text-slate-500 max-w-2xl mx-auto text-sm sm:text-base lg:text-lg">Consulte los plazos máximos para el envío de proyectos y las reuniones de evaluación programadas por el Comité.</p>
             </div>
 
-            <div className="grid lg:grid-cols-12 gap-12 items-start">
+            <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
               {/* Proceso Informativo */}
               <div className="lg:col-span-4 space-y-6">
-                <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200/60 shadow-sm">
+                <div className="bg-slate-50 p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm">
                   <h3 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
                     <span className="w-2.5 h-7 bg-red-600 rounded-full block"></span> Presentación
                   </h3>
@@ -325,13 +327,13 @@ export default function LandingPage() {
               {/* Tabla de Fechas */}
               <div className="lg:col-span-8">
                 <div className="overflow-hidden rounded-3xl border border-slate-200 shadow-md bg-white">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                  <div className="overflow-x-auto table-responsive">
+                    <table className="w-full text-left border-collapse min-w-[500px]">
                       <thead>
                         <tr className="bg-slate-900 text-white uppercase text-[11px] tracking-wider border-b border-slate-800">
-                          <th className="px-6 py-5 font-black text-center w-1/4 border-r border-slate-800">Mes</th>
-                          <th className="px-6 py-5 font-black text-center w-3/8 border-r border-slate-800">Fecha Límite para Envío de Proyectos</th>
-                          <th className="px-6 py-5 font-black text-center w-3/8">Fecha Programada</th>
+                          <th className="px-3 sm:px-6 py-3 sm:py-5 font-black text-center w-1/4 border-r border-slate-800 text-[10px] sm:text-[11px]">Mes</th>
+                          <th className="px-3 sm:px-6 py-3 sm:py-5 font-black text-center w-3/8 border-r border-slate-800 text-[10px] sm:text-[11px]">Fecha Límite para Envío</th>
+                          <th className="px-3 sm:px-6 py-3 sm:py-5 font-black text-center w-3/8 text-[10px] sm:text-[11px]">Fecha Programada</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -349,19 +351,19 @@ export default function LandingPage() {
                                 {fechaIdx === 0 && (
                                   <td 
                                     rowSpan={mesData.fechas.length} 
-                                    className="px-6 py-5 font-black text-slate-800 border-r border-slate-200 align-middle text-center uppercase tracking-wide bg-slate-50/60 text-sm"
+                                    className="px-3 sm:px-6 py-3 sm:py-5 font-black text-slate-800 border-r border-slate-200 align-middle text-center uppercase tracking-wide bg-slate-50/60 text-xs sm:text-sm"
                                   >
                                     {mesData.mes}
                                   </td>
                                 )}
-                                <td className="px-6 py-5 text-slate-600 font-semibold border-r border-slate-100 text-center">
-                                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-extrabold border border-red-100 shadow-sm">
+                                <td className="px-3 sm:px-6 py-3 sm:py-5 text-slate-600 font-semibold border-r border-slate-100 text-center">
+                                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-red-50 text-red-600 text-[10px] sm:text-xs font-extrabold border border-red-100 shadow-sm">
                                     <svg className="w-3.5 h-3.5 text-red-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     {fecha.limite}
                                   </span>
                                 </td>
-                                <td className="px-6 py-5 text-slate-600 font-semibold text-center">
-                                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-yellow-50 text-yellow-600 text-xs font-extrabold border border-yellow-200 shadow-sm">
+                                <td className="px-3 sm:px-6 py-3 sm:py-5 text-slate-600 font-semibold text-center">
+                                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-yellow-50 text-yellow-600 text-[10px] sm:text-xs font-extrabold border border-yellow-200 shadow-sm">
                                     <svg className="w-3.5 h-3.5 text-yellow-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                     {fecha.programada}
                                   </span>
@@ -380,13 +382,13 @@ export default function LandingPage() {
         </section>
 
         {/* SECCIÓN PROYECTO - PROCEDIMIENTOS DE PRESENTACIÓN */}
-        <section id="proyecto" className="py-24 bg-slate-50 border-b border-slate-200 relative overflow-hidden">
+        <section id="proyecto" className="py-12 sm:py-16 lg:py-24 bg-slate-50 border-b border-slate-200 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-16">
-              <span className="text-red-600 font-black tracking-widest uppercase text-sm mb-2 block">Flujo de Trámite</span>
-              <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">Procedimientos de Presentación</h2>
-              <p className="text-slate-500 max-w-3xl mx-auto text-lg leading-relaxed">
+            <div className="text-center mb-10 sm:mb-16">
+              <span className="text-red-600 font-black tracking-widest uppercase text-xs sm:text-sm mb-2 block">Flujo de Trámite</span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4">Procedimientos de Presentación</h2>
+              <p className="text-slate-500 max-w-3xl mx-auto text-sm sm:text-base lg:text-lg leading-relaxed">
                 Los proyectos deberán ser presentados como máximo <span className="font-extrabold text-red-600">cuatro días antes</span> de la reunión ordinaria programada. Estos, junto con los formatos, deberán ser presentados a través del correo <a href="mailto:ciei@unap.edu.pe" className="text-red-600 hover:underline font-extrabold">ciei@unap.pe</a>.
               </p>
             </div>
@@ -588,14 +590,14 @@ export default function LandingPage() {
         </section>
 
         {/* SECCIÓN AVISOS DINÁMICA */}
-        <section id="avisos" className="py-24 bg-slate-50 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 relative z-10">
+        <section id="avisos" className="py-12 sm:py-16 lg:py-24 bg-slate-50 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
               <div>
-                <span className="text-red-600 font-black tracking-widest uppercase text-sm mb-2 flex items-center gap-2">
+                <span className="text-red-600 font-black tracking-widest uppercase text-xs sm:text-sm mb-2 flex items-center gap-2">
                   <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span> Últimas Noticias
                 </span>
-                <h2 className="text-4xl md:text-5xl font-black text-slate-900">Avisos del Comité</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900">Avisos del Comité</h2>
               </div>
               {avisos.length > 4 && (
                 <button 
@@ -612,9 +614,9 @@ export default function LandingPage() {
                 <p className="text-slate-500 font-bold">No hay avisos publicados en este momento.</p>
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
                 {avisosRecientes.map((aviso) => (
-                  <div key={aviso.id} className="bg-white p-8 rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.04)] border border-slate-200 hover:border-yellow-400 hover:shadow-xl transition-all group flex flex-col">
+                  <div key={aviso.id} className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.04)] border border-slate-200 hover:border-yellow-400 hover:shadow-xl transition-all group flex flex-col">
                     
                     {aviso.imagen_url && (
                       <div className="w-full h-48 mb-6 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100 relative">
@@ -629,7 +631,7 @@ export default function LandingPage() {
                       <span className="text-slate-400 text-sm font-medium">Publicado: {aviso.fecha}</span>
                     </div>
                     
-                    <h3 className="text-2xl font-extrabold text-slate-800 mb-4 group-hover:text-red-600 transition-colors">
+                    <h3 className="text-lg sm:text-2xl font-extrabold text-slate-800 mb-4 group-hover:text-red-600 transition-colors">
                       {aviso.titulo}
                     </h3>
                     <p className="text-slate-600 mb-6 whitespace-pre-wrap flex-1">{aviso.texto}</p>
@@ -641,36 +643,36 @@ export default function LandingPage() {
         </section>
 
         {/* SECCIÓN FORMATOS OFICIALES DINÁMICOS */}
-        <section id="formatos" className="bg-slate-900 py-24 relative overflow-hidden">
+        <section id="formatos" className="bg-slate-900 py-12 sm:py-16 lg:py-24 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
-          <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
             <div className="text-center mb-10">
-              <span className="text-yellow-400 font-black tracking-widest uppercase text-sm mb-2 block">Descargas Necesarias</span>
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-4">Formatos Oficiales</h2>
-              <p className="text-slate-400 max-w-2xl mx-auto text-lg">Descargue las plantillas, complételas y adjúntelas dentro de la plataforma al enviar su expediente.</p>
+              <span className="text-yellow-400 font-black tracking-widest uppercase text-xs sm:text-sm mb-2 block">Descargas Necesarias</span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">Formatos Oficiales</h2>
+              <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base lg:text-lg">Descargue las plantillas, complételas y adjúntelas dentro de la plataforma al enviar su expediente.</p>
             </div>
 
             {/* Selector de Categorías (Humanos vs Animales) */}
-            <div className="flex justify-center gap-4 mb-12">
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
               <button 
                 onClick={() => setCategoriaFormatoActiva('humanos')} 
-                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   categoriaFormatoActiva === 'humanos' 
                     ? 'bg-yellow-400 text-slate-900 shadow-lg shadow-yellow-400/20' 
                     : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-750'
                 }`}
               >
-                🔬 Investigación en Humanos
+                🔬 <span className="hidden sm:inline">Investigación en </span>Humanos
               </button>
               <button 
                 onClick={() => setCategoriaFormatoActiva('animales')} 
-                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   categoriaFormatoActiva === 'animales' 
                     ? 'bg-yellow-400 text-slate-900 shadow-lg shadow-yellow-400/20' 
                     : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-750'
                 }`}
               >
-                🐾 Investigación en Animales
+                🐾 <span className="hidden sm:inline">Investigación en </span>Animales
               </button>
             </div>
             
@@ -679,13 +681,13 @@ export default function LandingPage() {
                 <p className="text-slate-400 font-bold">No hay formatos subidos para esta categoría en este momento.</p>
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
                 {formatos
                   .filter(f => (f.categoria || 'humanos') === categoriaFormatoActiva)
                   .map((formato) => {
                     const esPDF = formato.titulo.toLowerCase().includes('pdf');
                     return (
-                      <div key={formato.id} className="bg-slate-800 p-8 rounded-3xl border border-slate-700 hover:border-yellow-400 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
+                      <div key={formato.id} className="bg-slate-800 p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-700 hover:border-yellow-400 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
                         <div className="w-16 h-16 bg-slate-700 rounded-2xl flex items-center justify-center text-yellow-400 mb-6 group-hover:bg-yellow-400 group-hover:text-slate-900 transition-all">
                           {esPDF ? (
                             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -714,13 +716,13 @@ export default function LandingPage() {
       </main>
 
       {/* PIE DE PÁGINA (Con Tooltip KODIAK) */}
-      <footer className="bg-slate-950 text-slate-400 pt-20 pb-8 border-t-8 border-red-600 relative overflow-hidden">
+      <footer className="bg-slate-950 text-slate-400 pt-12 sm:pt-20 pb-8 border-t-8 border-red-600 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
-            <div className="md:col-span-5">
-              <img src="/logovri.png" alt="VRI UNA Puno" className="h-16 mb-6 drop-shadow-xl" />
-              <p className="text-slate-400 font-medium leading-relaxed mb-6 max-w-sm">Plataforma de Investigación y Desarrollo, garantizando los más altos estándares éticos y metodológicos en la ciencia de nuestra región.</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 sm:gap-12 mb-10 sm:mb-16">
+            <div className="sm:col-span-2 md:col-span-5">
+              <img src="/logovri.png" alt="VRI UNA Puno" className="h-12 sm:h-16 mb-4 sm:mb-6 drop-shadow-xl" />
+              <p className="text-slate-400 font-medium leading-relaxed mb-6 max-w-sm text-sm sm:text-base">Plataforma de Investigación y Desarrollo, garantizando los más altos estándares éticos y metodológicos en la ciencia de nuestra región.</p>
             </div>
             <div className="md:col-span-3">
               <h4 className="text-white font-black text-xl mb-6 tracking-wide">Enlaces</h4>
@@ -745,8 +747,8 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 text-sm font-medium">
-            <p className="text-slate-500">© 2026 Universidad Nacional del Altiplano. Todos los derechos reservados.</p>
+          <div className="pt-6 sm:pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 text-xs sm:text-sm font-medium">
+            <p className="text-slate-500 text-center md:text-left">© 2026 Universidad Nacional del Altiplano. Todos los derechos reservados.</p>
             
             {/* TOOLTIP KODIAK */}
             <div className="relative group cursor-help flex items-center gap-3 bg-slate-900 px-5 py-2.5 rounded-full border border-slate-800 shadow-inner transition-all hover:border-red-500/30">
@@ -770,10 +772,10 @@ export default function LandingPage() {
 
       {/* MODAL GIGANTE DE AVISOS HISTÓRICOS */}
       {modalAvisosAbierto && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md">
-          <div className="bg-slate-50 rounded-3xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden animate-fade-in border border-slate-200">
-            <div className="bg-white px-8 py-5 border-b border-slate-200 flex justify-between items-center z-10 shadow-sm">
-              <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-md">
+          <div className="bg-slate-50 rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-4xl h-[85vh] sm:h-[80vh] flex flex-col overflow-hidden animate-fade-in border border-slate-200">
+            <div className="bg-white px-4 sm:px-8 py-4 sm:py-5 border-b border-slate-200 flex justify-between items-center z-10 shadow-sm">
+              <h3 className="text-lg sm:text-2xl font-black text-slate-900 flex items-center gap-3">
                 <span className="w-3 h-8 bg-red-600 rounded-full block"></span> Historial de Comunicados
               </h3>
               <button onClick={() => setModalAvisosAbierto(false)} className="w-10 h-10 bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-full flex items-center justify-center font-bold transition-colors">✕</button>

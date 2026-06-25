@@ -111,7 +111,7 @@ const buscarDNI = async (numeroDni: string) => {
   const isFormValid = documento.length > 0 && nombres.trim() !== '' && apellidos.trim() !== '' && correo && password && confirmarPassword && (password === confirmarPassword);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-96 bg-[#D4AF37]/10 blur-[120px] rounded-full pointer-events-none"></div>
       
@@ -119,7 +119,7 @@ const buscarDNI = async (numeroDni: string) => {
         <Link to="/" className="flex justify-center mb-6">
           <img src="/logo.png" alt="Logo CIEI" className="h-16 hover:scale-105 transition-transform" />
         </Link>
-        <h2 className="mt-6 text-center text-3xl font-black text-slate-900 tracking-tight">
+        <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
           Registro de Investigador
         </h2>
         <p className="mt-2 text-center text-sm text-slate-650">
@@ -131,7 +131,7 @@ const buscarDNI = async (numeroDni: string) => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl relative z-10">
-        <div className="bg-white py-8 px-4 shadow-[0_10px_40px_rgb(0,0,0,0.06)] sm:rounded-3xl sm:px-10 border border-slate-200/60">
+        <div className="bg-white py-6 sm:py-8 px-4 shadow-[0_10px_40px_rgb(0,0,0,0.06)] sm:rounded-3xl sm:px-10 border border-slate-200/60">
           
           {errorRegistro && (
             <div className="mb-4 bg-rose-50 border-l-4 border-rose-500 p-4 rounded-md">
@@ -145,7 +145,7 @@ const buscarDNI = async (numeroDni: string) => {
               {/* SELECTOR DE TIPO DE DOCUMENTO */}
               <div className="sm:col-span-2">
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Tipo de Documento</label>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-3 sm:gap-4">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="radio" name="tipoDoc" value="DNI" checked={tipoDoc === 'DNI'} onChange={(e) => setTipoDoc(e.target.value)} className="text-[#B5944B] focus:ring-[#B5944B] cursor-pointer"/>
                     <span className="text-sm font-medium text-slate-700">DNI</span>

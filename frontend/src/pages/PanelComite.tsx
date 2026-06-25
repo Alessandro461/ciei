@@ -530,20 +530,20 @@ export default function PanelComite() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans flex flex-col selection:bg-red-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col selection:bg-red-500 selection:text-white overflow-x-hidden">
       
       {/* NAVEGACIÓN SUPERIOR UNIFICADA */}
       <nav className="bg-gradient-to-r from-[#0B132B] to-[#121E3A] text-white shadow-xl z-10 relative border-b border-[#1E293B]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative z-10">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between relative z-10">
           
           {/* Logo con Link a Landing Page */}
           <div className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity" onClick={() => navigate('/')}>
             <div className="w-8 h-8 bg-[#D4AF37] rounded-lg flex items-center justify-center font-black text-[#0B132B] shadow-md shadow-[#D4AF37]/15">U</div>
             <div className="flex flex-col">
-              <span className="font-black text-sm tracking-tight leading-none text-white">CIEI <span className="font-normal text-slate-400">| Sala de Control</span></span>
+              <span className="font-black text-xs sm:text-sm tracking-tight leading-none text-white">CIEI <span className="font-normal text-slate-400 hidden sm:inline">| Sala de Control</span></span>
               <span className="text-[9px] font-bold text-[#D4AF37] uppercase tracking-wider mt-0.5">Volver al Inicio</span>
             </div>
-            <span className="ml-3 bg-[#D4AF37]/10 border border-[#D4AF37]/25 text-[#D4AF37] text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">
+            <span className="ml-3 bg-[#D4AF37]/10 border border-[#D4AF37]/25 text-[#D4AF37] text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider hidden sm:inline">
               {usuario?.rol}
             </span>
           </div>
@@ -583,7 +583,7 @@ export default function PanelComite() {
       {/* PESTAÑAS DE NAVEGACIÓN PREMIUM */}
       <div className="bg-[#F8FAFC] py-5 px-4 sm:px-6 lg:px-8 border-b border-slate-250/60 sticky top-0 z-20 backdrop-blur-md bg-opacity-90">
         <div className="max-w-7xl mx-auto flex justify-center sm:justify-start">
-          <div className="bg-slate-150/90 p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto max-w-full border border-slate-200/50">
+          <div className="bg-slate-150/90 p-1 sm:p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto max-w-full border border-slate-200/50 scrollbar-hide">
             <button 
               onClick={() => setPestañaActiva('expedientes')} 
               className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-bold text-xs transition-all uppercase tracking-wider ${
@@ -632,7 +632,7 @@ export default function PanelComite() {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 w-full flex-1">
         
         {/* =========================================
             VISTA 1: EXPEDIENTES (Con Buscador)
@@ -660,8 +660,8 @@ export default function PanelComite() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_5px_20px_rgb(0,0,0,0.03)] border border-slate-200/80 overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-100">
+            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-[0_5px_20px_rgb(0,0,0,0.03)] border border-slate-200/80 overflow-x-auto table-responsive">
+              <table className="min-w-[800px] w-full divide-y divide-slate-100">
                 <thead className="bg-slate-50/50">
                   <tr>
                     <th className="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Expediente</th>

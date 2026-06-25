@@ -85,16 +85,16 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans flex flex-col overflow-x-hidden">
       {/* NAVEGACIÓN SUPERIOR PREMIUM */}
       <nav className="bg-gradient-to-r from-[#0B132B] to-[#121E3A] text-white shadow-xl z-10 relative border-b border-[#1E293B]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#D4AF37] rounded-lg flex items-center justify-center font-black text-[#0B132B] shadow-md shadow-[#D4AF37]/15">U</div>
-            <span className="font-extrabold tracking-tight text-sm">CIEI <span className="font-normal text-slate-400">| Panel Investigador</span></span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#D4AF37] rounded-lg flex items-center justify-center font-black text-[#0B132B] shadow-md shadow-[#D4AF37]/15 text-sm sm:text-base">U</div>
+            <span className="font-extrabold tracking-tight text-xs sm:text-sm">CIEI <span className="font-normal text-slate-400 hidden sm:inline">| Panel Investigador</span></span>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <span className="text-xs font-bold text-slate-400 hidden sm:block border-r border-[#1E293B] pr-4">
               Usuario: <span className="font-extrabold text-white">{usuario?.nombres} {usuario?.apellidos}</span>
             </span>
@@ -118,12 +118,12 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full space-y-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 flex-1 w-full space-y-6 sm:space-y-8">
         
         {/* ENCABEZADO */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/60 pb-6">
           <div>
-            <h1 className="text-2xl font-black text-[#0B132B] tracking-tight">Bandeja de Expedientes</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-[#0B132B] tracking-tight">Bandeja de Expedientes</h1>
             <p className="text-xs text-slate-500 mt-1 font-medium">Gestione y envíe sus protocolos científicos para revisión bioética.</p>
           </div>
           
@@ -137,10 +137,10 @@ export default function Dashboard() {
         </div>
 
         {/* TARJETAS KPI REDISEÑADAS (Premium) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
           {/* Total */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/65 shadow-sm flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
+          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/65 shadow-sm flex items-center gap-3 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             </div>
             <div>
@@ -149,8 +149,8 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Aprobados */}
-          <div className="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/50">
+          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-emerald-100 shadow-sm flex items-center gap-3 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/50">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <div>
@@ -159,8 +159,8 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Observados */}
-          <div className="bg-white p-5 rounded-2xl border border-amber-100 shadow-sm flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100/50">
+          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-amber-100 shadow-sm flex items-center gap-3 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100/50">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
             <div>
@@ -169,8 +169,8 @@ export default function Dashboard() {
             </div>
           </div>
           {/* En revisión */}
-          <div className="bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100/50">
+          <div className="bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-indigo-100 shadow-sm flex items-center gap-3 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100/50">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <div>
@@ -201,7 +201,7 @@ export default function Dashboard() {
               return (
                 <div 
                   key={sol.id} 
-                  className="bg-white p-6 rounded-2xl border border-slate-250/70 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6"
+                  className="bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-250/70 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col gap-4 sm:gap-6"
                 >
                   <div className="flex-1 space-y-3.5 min-w-0">
                     <div className="flex items-center gap-3">

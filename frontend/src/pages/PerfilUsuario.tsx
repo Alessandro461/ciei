@@ -117,7 +117,7 @@ export default function PerfilUsuario() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans flex flex-col selection:bg-red-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col selection:bg-red-500 selection:text-white overflow-x-hidden relative">
       
       <nav className="bg-slate-950 text-white shadow-xl z-10 border-b border-slate-800 relative">
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
@@ -137,7 +137,7 @@ export default function PerfilUsuario() {
       <main className="max-w-4xl mx-auto px-4 py-12 w-full flex-1">
         <form onSubmit={guardarCambios} className="space-y-8 animate-fade-in">
           
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-[0_5px_20px_rgb(0,0,0,0.03)] relative overflow-hidden">
+          <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-[0_5px_20px_rgb(0,0,0,0.03)] relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
               <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             </div>
@@ -166,7 +166,7 @@ export default function PerfilUsuario() {
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-[0_5px_20px_rgb(0,0,0,0.03)]">
+          <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-[0_5px_20px_rgb(0,0,0,0.03)]">
             <h3 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-3">
               <span className="w-2 h-6 bg-slate-900 rounded-full block"></span> Seguridad y Contraseña
             </h3>

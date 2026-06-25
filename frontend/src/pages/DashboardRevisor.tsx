@@ -53,6 +53,7 @@ export default function DashboardRevisor() {
   
   // Control del Menú Lateral
   const [vistaActiva, setVistaActiva] = useState<'inicio' | 'pendientes' | 'subsanaciones' | 'historial'>('inicio');
+  const [sidebarAbierto, setSidebarAbierto] = useState(false);
 
   const cargarEstadoSeguridad = async () => {
     try {
@@ -145,10 +146,17 @@ export default function DashboardRevisor() {
   return (
     <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
       
+      {/* Overlay para cerrar sidebar en móvil */}
+      {sidebarAbierto && (
+        <div className="fixed inset-0 bg-black/50 z-20 lg:hidden" onClick={() => setSidebarAbierto(false)}></div>
+      )}
+
       {/* ========================================== */}
       {/* MENÚ DEL REVISOR (SIDEBAR KODIAK) */}
       {/* ========================================== */}
-      <aside className="w-72 bg-[#0B132B] text-slate-300 flex flex-col shadow-2xl relative z-20 shrink-0">
+      <aside className={`fixed lg:relative w-72 bg-[#0B132B] text-slate-300 flex flex-col shadow-2xl z-30 shrink-0 h-full transition-transform duration-300 lg:translate-x-0 ${
+        sidebarAbierto ? 'translate-x-0' : '-translate-x-full'
+      }`}>
         
         <div className="h-20 flex items-center gap-3 px-6 bg-[#080d1e] border-b border-slate-800/50">
           <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black shadow-lg">C</div>
@@ -205,16 +213,22 @@ export default function DashboardRevisor() {
       {/* ========================================== */}
       {/* CONTENIDO PRINCIPAL (DASHBOARD) */}
       {/* ========================================== */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative min-w-0">
         
-        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 z-10 shadow-sm">
-          <div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">
+        <header className="h-14 sm:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-8 shrink-0 z-10 shadow-sm gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Botón hamburguesa móvil */}
+            <button onClick={() => setSidebarAbierto(!sidebarAbierto)} className="lg:hidden p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-2xl font-black text-slate-800 tracking-tight truncate">
               {vistaActiva === 'inicio' ? 'Resumen de Auditoría' : 
                vistaActiva === 'pendientes' ? 'Expedientes Pendientes de Revisión' : 
                vistaActiva === 'subsanaciones' ? 'Control de Subsanaciones' : 'Historial de Dictámenes Emitidos'}
-            </h1>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Plataforma de Evaluación Científica</p>
+              </h1>
+              <p className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5 sm:mt-1">Plataforma de Evaluación</p>
+            </div>
           </div>
           
           <button className="relative p-2 bg-slate-50 border border-slate-200 rounded-full text-slate-400 hover:text-blue-600 transition-colors">
@@ -223,11 +237,11 @@ export default function DashboardRevisor() {
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-slate-50">
           
           {/* INDICADORES (Solo visibles en Inicio) */}
           {vistaActiva === 'inicio' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 animate-fade-in">
               
               <div onClick={() => setVistaActiva('pendientes')} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden group cursor-pointer hover:border-blue-300 transition-colors">
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform"><svg className="w-20 h-20 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>

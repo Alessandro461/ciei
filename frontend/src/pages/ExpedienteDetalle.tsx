@@ -387,14 +387,15 @@ export default function ExpedienteDetalle() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans flex flex-col relative">
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col relative overflow-x-hidden">
       
       {/* NAVEGACIÓN SUPERIOR UNIFICADA */}
       <nav className="bg-gradient-to-r from-[#0B132B] to-[#121E3A] text-white shadow-xl z-10 relative border-b border-[#1E293B]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-2.5 text-xs font-bold text-slate-350 hover:text-white transition-all hover:translate-x-[-2px] cursor-pointer">
             <svg className="w-4 h-4 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            <span>Volver a Mis Expedientes</span>
+            <span className="hidden sm:inline">Volver a Mis Expedientes</span>
+            <span className="sm:hidden">Volver</span>
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-[10px] bg-white/10 border border-slate-700/60 px-3 py-1.5 rounded-lg font-black tracking-widest uppercase text-slate-300">
@@ -404,14 +405,14 @@ export default function ExpedienteDetalle() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 py-10 w-full flex-1 space-y-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 w-full flex-1 space-y-6 sm:space-y-8">
         
         {/* ENCABEZADO Y ESTADO SEMÁFORO */}
-        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
           <div className="space-y-2 max-w-2xl">
             <span className="text-xs font-black tracking-widest uppercase text-blue-600 block">Número de Trámite</span>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">{expediente?.numero_expediente || 'Borrador'}</h1>
-            <p className="text-slate-700 font-bold text-lg leading-snug">{expediente?.titulo_proyecto}</p>
+            <h1 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight">{expediente?.numero_expediente || 'Borrador'}</h1>
+            <p className="text-slate-700 font-bold text-sm sm:text-lg leading-snug">{expediente?.titulo_proyecto}</p>
           </div>
           
           <div className="shrink-0 flex flex-col items-end gap-1">
@@ -498,7 +499,7 @@ export default function ExpedienteDetalle() {
         )}
 
         {/* CUERPO CENTRAL */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
           
           {/* COLUMNA IZQUIERDA: Ficha y TIMELINE */}
           <div className="space-y-6">

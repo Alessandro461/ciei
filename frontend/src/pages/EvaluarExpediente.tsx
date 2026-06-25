@@ -316,24 +316,24 @@ export default function EvaluarExpediente() {
   // RENDERIZADO VISUAL (UI)
   // ==========================================
   return (
-    <div className="min-h-screen bg-slate-100 font-sans flex flex-col">
+    <div className="min-h-screen bg-slate-100 font-sans flex flex-col overflow-x-hidden relative">
       
       {/* NAVEGACIÓN SUPERIOR */}
-      <nav className="bg-gradient-to-r from-[#0B132B] to-[#1C2541] text-white py-4.5 px-6 border-b border-indigo-900 shadow-lg">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <nav className="bg-gradient-to-r from-[#0B132B] to-[#1C2541] text-white py-4 px-4 sm:px-6 border-b border-indigo-900 shadow-lg">
+        <div className="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button 
               onClick={() => navigate('/comite')} 
-              className="bg-white/10 hover:bg-white/20 border border-slate-700/60 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:scale-95 active:scale-90"
+              className="bg-white/10 hover:bg-white/20 border border-slate-700/60 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all hover:scale-95 active:scale-90 shrink-0"
             >
-              ← Volver a la Bandeja
+              ← Volver
             </button>
-            <span className="font-extrabold text-base tracking-tight">
+            <span className="font-extrabold text-sm sm:text-base tracking-tight">
               Plataforma de Evaluación | <span className="text-blue-400">Expediente #{id}</span>
             </span>
           </div>
           {esSubsanacion && (
-            <span className="bg-teal-650 text-teal-100 border border-teal-500/35 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 animate-pulse shadow-lg">
+            <span className="bg-teal-650 text-teal-100 border border-teal-500/35 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest flex items-center gap-2 animate-pulse shadow-lg self-start sm:self-auto">
               <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping"></span>
               Revisando Subsanación
             </span>
@@ -346,7 +346,7 @@ export default function EvaluarExpediente() {
         {/* ========================================================= */}
         {/* COLUMNA IZQUIERDA: Panel de Revisión, Archivos y Formularios */}
         {/* ========================================================= */}
-        <div className="w-full lg:w-[480px] flex flex-col gap-5 lg:h-[calc(100vh-120px)] lg:min-h-[750px] overflow-y-auto pr-2 pb-4">
+        <div className="w-full lg:w-[480px] flex flex-col gap-5 lg:h-[calc(100vh-120px)] lg:min-h-[750px] overflow-y-visible lg:overflow-y-auto lg:pr-2 pb-4">
           
           {mensaje && <div className="bg-red-100 text-red-700 p-4 rounded-xl font-bold shrink-0 shadow-sm border border-red-200">{mensaje}</div>}
 
@@ -785,7 +785,7 @@ export default function EvaluarExpediente() {
         {/* ========================================================= */}
         {/* COLUMNA DERECHA: Visor Interactivo (iFrame) */}
         {/* ========================================================= */}
-        <div className="w-full lg:w-[calc(100%-480px)] bg-slate-300 rounded-2xl shadow-inner border border-slate-300 overflow-hidden flex flex-col h-[650px] lg:h-[calc(100vh-120px)] lg:min-h-[750px] relative">
+        <div className="w-full lg:w-[calc(100%-480px)] bg-slate-300 rounded-2xl shadow-inner border border-slate-300 overflow-hidden flex flex-col h-[400px] sm:h-[550px] lg:h-[calc(100vh-120px)] lg:min-h-[750px] relative">
           {previewUrl ? (
             <>
               <div className="bg-slate-800 text-white px-4 py-3 flex justify-between items-center shrink-0">

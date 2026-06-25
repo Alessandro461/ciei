@@ -134,7 +134,7 @@ export default function Perfil() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans flex flex-col pb-12">
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col pb-12 overflow-x-hidden relative">
       
       {/* NAVEGACIÓN SUPERIOR UNIFICADA */}
       <nav className="bg-gradient-to-r from-[#0B132B] to-[#121E3A] text-white shadow-xl z-10 sticky top-0 border-b border-[#1E293B]">
@@ -175,7 +175,7 @@ export default function Perfil() {
         <form onSubmit={manejarEnvio} className="space-y-6">
           
           {/* SECCIÓN 1: Datos Personales */}
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <h3 className="text-lg font-black text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
               Datos Personales
@@ -210,7 +210,7 @@ export default function Perfil() {
           </div>
 
           {/* SECCIÓN 2: Información Académica */}
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <h3 className="text-lg font-black text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
               Información Académica
@@ -239,7 +239,7 @@ export default function Perfil() {
           </div>
 
           {/* SECCIÓN 3: Seguridad */}
-          <div className="bg-slate-900 p-8 rounded-3xl shadow-sm space-y-6 border border-slate-800 relative overflow-hidden">
+          <div className="bg-slate-900 p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm space-y-6 border border-slate-800 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
             
             <h3 className="text-lg font-black text-white border-b border-slate-700 pb-3 flex items-center gap-2 relative z-10">

@@ -52,7 +52,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/20 flex font-sans">
+    <div className="min-h-screen bg-slate-50/20 flex font-sans overflow-x-hidden">
       
       {/* SECCIÓN IZQUIERDA: Estética Institucional KODIAK */}
       <div className="hidden lg:flex w-1/2 bg-[#0B132B] p-12 flex-col justify-center relative overflow-hidden">
@@ -98,10 +98,10 @@ export default function Login() {
       </div>
  
       {/* SECCIÓN DERECHA: Formulario de Login */}
-      <div className="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 md:p-16 bg-white relative overflow-y-auto shadow-2xl">
+      <div className="w-full lg:w-1/2 flex flex-col p-5 sm:p-8 md:p-12 lg:p-16 bg-white relative overflow-y-auto shadow-2xl">
         
         {/* LOGO CLIKEABLE (Lleva a la página principal) */}
-        <div className="w-full max-w-md mx-auto mb-8">
+        <div className="w-full max-w-md mx-auto mb-6 sm:mb-8">
           <Link to="/" className="inline-block transition-transform hover:scale-105 active:scale-95">
             <img 
               src="/logo.png" 
@@ -114,8 +114,8 @@ export default function Login() {
         <div className="w-full max-w-md mx-auto flex-1 flex flex-col justify-center">
           
           <div className="mb-8">
-            <h2 className="text-3xl font-black text-[#0B132B] tracking-tight">Iniciar Sesión</h2>
-            <p className="text-xs font-semibold text-slate-500 mt-2">Ingrese sus credenciales para acceder a la gestión de sus expedientes.</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-[#0B132B] tracking-tight">Iniciar Sesión</h2>
+            <p className="text-xs font-semibold text-slate-500 mt-1.5 sm:mt-2">Ingrese sus credenciales para acceder a la gestión de sus expedientes.</p>
           </div>
  
           {error && (
