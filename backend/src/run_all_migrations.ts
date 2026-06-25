@@ -185,6 +185,14 @@ async function runAllMigrations() {
       ADD COLUMN IF NOT EXISTS categoria_riesgo VARCHAR(20) DEFAULT 'bajo';
     `);
 
+    // 15. Usuarios - Columnas para recuperación de contraseña
+    console.log('Altering table usuarios for password recovery...');
+    await client.query(`
+      ALTER TABLE usuarios 
+      ADD COLUMN IF NOT EXISTS token_recuperacion VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS token_recuperacion_expiracion TIMESTAMP;
+    `);
+
     console.log('🎉 ¡Todas las migraciones se ejecutaron con éxito!');
   } catch (error) {
     console.error('❌ Error ejecutando las migraciones agrupadas:', error);

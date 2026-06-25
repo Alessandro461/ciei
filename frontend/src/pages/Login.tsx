@@ -21,7 +21,41 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [verPassword, setVerPassword] = useState(false);
+  const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotCargando, setForgotCargando] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState({ tipo: '', texto: '', debugLink: '' });
   const navigate = useNavigate();
+
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail) return;
+
+    setForgotCargando(true);
+    setForgotMessage({ tipo: '', texto: '', debugLink: '' });
+
+    try {
+      const response = await axios.post(`${API_URL}/api/auth/recuperar-password`, {
+        correo_institucional: forgotEmail
+      });
+
+      setForgotMessage({
+        tipo: 'exito',
+        texto: response.data.mensaje || 'Se ha enviado un enlace de recuperación a su correo.',
+        debugLink: response.data.debugLink || ''
+      });
+      setForgotEmail('');
+
+    } catch (err: any) {
+      setForgotMessage({
+        tipo: 'error',
+        texto: err.response?.data?.error || 'Error al procesar la solicitud de recuperación.',
+        debugLink: ''
+      });
+    } finally {
+      setForgotCargando(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,9 +186,17 @@ export default function Login() {
                 <label className="text-[10px] font-black text-slate-450 uppercase tracking-widest group-focus-within:text-[#B5944B] transition-colors duration-200">
                   Contraseña
                 </label>
-                <a href="#" className="text-[10px] font-bold text-slate-400 hover:text-[#B5944B] transition-colors underline decoration-slate-200 hover:decoration-[#B5944B]">
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setForgotPasswordModal(true);
+                    setForgotMessage({ tipo: '', texto: '', debugLink: '' });
+                    setForgotEmail('');
+                  }}
+                  className="text-[10px] font-bold text-slate-400 hover:text-[#B5944B] transition-colors underline decoration-slate-200 hover:decoration-[#B5944B] cursor-pointer"
+                >
                   ¿Olvidó su clave?
-                </a>
+                </button>
               </div>
               <div className="relative flex items-center">
                 <div className="absolute left-4 z-10 text-slate-400 group-focus-within:text-[#B5944B] transition-colors duration-200">
@@ -205,6 +247,98 @@ export default function Login() {
  
         </div>
       </div>
+
+      {/* MODAL DE RECUPERACIÓN DE CONTRASEÑA */}
+      {forgotPasswordModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden animate-fade-in">
+            
+            {/* Header del Modal */}
+            <div className="bg-gradient-to-r from-[#0B132B] to-[#1C2541] text-white px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🔑</span>
+                <h3 className="font-extrabold text-sm tracking-tight">Recuperar Contraseña</h3>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setForgotPasswordModal(false)}
+                className="text-slate-400 hover:text-white hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Cuerpo del Modal */}
+            <form onSubmit={handleForgotPasswordSubmit} className="p-6 space-y-4">
+              <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
+                Ingrese su correo electrónico institucional. Le enviaremos un enlace de recuperación para acceder de nuevo.
+              </p>
+
+              {/* Alerta del Mensaje */}
+              {forgotMessage.texto && (
+                <div className={`p-4.5 rounded-xl border font-bold text-[10px] flex items-start gap-2.5 ${
+                  forgotMessage.tipo === 'exito' 
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-250' 
+                    : 'bg-rose-50 text-rose-700 border-rose-250'
+                }`}>
+                  <span className="text-xs shrink-0 mt-0.5">
+                    {forgotMessage.tipo === 'exito' ? '✅' : '⚠️'}
+                  </span>
+                  <div className="leading-relaxed flex-grow">
+                    {forgotMessage.texto}
+                    
+                    {forgotMessage.debugLink && (
+                      <div className="mt-3 p-3 bg-slate-900 text-slate-200 rounded-lg border border-slate-750 flex flex-col gap-2 font-mono text-[9px] break-all select-all">
+                        <strong className="text-yellow-400 font-sans tracking-wide">Enlace de Desarrollo:</strong>
+                        <span>{forgotMessage.debugLink}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Input de Correo */}
+              <div className="space-y-1">
+                <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                  Correo Electrónico Institucional
+                </label>
+                <input 
+                  type="email"
+                  required
+                  disabled={forgotCargando}
+                  placeholder="usuario@unap.edu.pe"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  className="w-full px-4 py-3 border border-slate-250 rounded-xl text-slate-800 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/10 focus:border-[#B5944B] outline-none transition-all duration-200 font-bold placeholder:font-medium placeholder:text-slate-400 text-xs shadow-sm"
+                />
+              </div>
+
+              {/* Botón de Enviar */}
+              <button 
+                type="submit"
+                disabled={forgotCargando}
+                className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-widest text-white shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                  forgotCargando
+                    ? 'bg-slate-300 shadow-none cursor-not-allowed text-slate-500'
+                    : 'bg-red-600 hover:bg-red-700 shadow-red-600/30'
+                }`}
+              >
+                {forgotCargando ? 'Enviando...' : 'Enviar Enlace'}
+              </button>
+
+              {/* Botón de Cancelar */}
+              <button 
+                type="button"
+                onClick={() => setForgotPasswordModal(false)}
+                className="w-full bg-slate-50 hover:bg-slate-100 text-[#0B132B] font-extrabold py-3 rounded-xl border border-slate-200 transition-all text-[10px] uppercase tracking-wider cursor-pointer text-center"
+              >
+                Cerrar Ventana
+              </button>
+
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
