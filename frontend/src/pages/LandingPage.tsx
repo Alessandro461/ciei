@@ -223,7 +223,7 @@ export default function LandingPage() {
                   Investigación Científica
                 </span>
               </h1>
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-300 mb-8 sm:mb-10 font-medium leading-relaxed max-w-2xl backdrop-blur-sm bg-slate-900/40 p-4 sm:p-5 rounded-2xl border border-white/10 shadow-xl">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl !text-slate-200 mb-8 sm:mb-10 font-medium leading-relaxed max-w-2xl backdrop-blur-sm bg-slate-900/40 p-4 sm:p-5 rounded-2xl border border-white/10 shadow-xl">
                 Sistematizamos y agilizamos la evaluación de protocolos de investigación para proteger la vida, los derechos y la dignidad en estudios con humanos y animales.
               </p>
               
